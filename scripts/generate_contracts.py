@@ -196,9 +196,11 @@ def generate() -> dict[Path, str]:
         if name.startswith("MAX_")
     )
 
-    exchange = TypeAdapter(
-        RequestSnapshot | EvidenceBundle | ReviewPackage
-    ).json_schema(mode="serialization")
+    exchange = prepare_schema(
+        TypeAdapter(RequestSnapshot | EvidenceBundle | ReviewPackage).json_schema(
+            mode="serialization"
+        )
+    )
     exchange["$schema"] = "https://json-schema.org/draft/2020-12/schema"
     exchange["$id"] = (
         "https://viridisquercus.github.io/IRCOMP-GUI/contracts/exchange-1.0.schema.json"

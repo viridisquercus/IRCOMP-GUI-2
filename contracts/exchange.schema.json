@@ -422,16 +422,18 @@
           ]
         },
         "target_labels": {
-          "patternProperties": {
-            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
-              "maxLength": 200,
-              "minLength": 1,
-              "pattern": "\\S",
-              "type": "string"
-            }
-          },
           "title": "Target Labels",
           "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+          },
+          "additionalProperties": {
+            "maxLength": 200,
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
           "maxProperties": 50
         }
       },

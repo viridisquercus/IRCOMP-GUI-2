@@ -191,6 +191,18 @@ class ContractTests(unittest.TestCase):
         evidence["candidates"][0]["metrics"][0]["value"] = None
         self.assertFalse(self.validator.is_valid(evidence))
 
+    def test_exchange_rejects_invalid_label_keys_and_values(self):
+        request = json.loads(
+            (ROOT / "contracts/examples/request-valid.json").read_text()
+        )
+        valid_labels = request["target_labels"].copy()
+        request["target_labels"] = {"not-a-uuid": "Label"}
+        self.assertFalse(self.validator.is_valid(request))
+        request["target_labels"] = {next(iter(valid_labels)): 17}
+        self.assertFalse(self.validator.is_valid(request))
+        request["target_labels"] = valid_labels
+        self.validator.validate(request)
+
     def test_workspace_response_requires_nested_fields(self):
         with self.assertRaises(ValidationError):
             WorkspaceView.model_validate({"workspace_id": "bad", "study": {}})

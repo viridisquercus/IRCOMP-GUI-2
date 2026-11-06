@@ -2,10 +2,11 @@
 
 ### Name: Lukas (Viridis) Dubsik
 
-## Scope
+## Earlier reported use
 
-AI contributed substantially to parts of the code while having no effect on most others. The main area where AI was used was during testing creation - where the testing files in cypress were fully ai generated, with me only providing the cucumber description and AI doing the rest.
-
+The Cypress tests were reported as AI-generated from the author's Cucumber
+scenario descriptions. This is a record of that reported work, not a complete
+authorship history of the project.
 
 ## Shared definitions and API responses
 
