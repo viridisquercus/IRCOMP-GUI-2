@@ -27,9 +27,9 @@ import type { Action, State } from "./state";
 
 /* Messages */
 const LEAVE_STUDY =
-  "This study has unsaved changes. Leave this working copy? Save first to preserve them.";
+  "The study has unsaved changes. Leave it anyway? (Cancel and save first to keep them.)";
 const DISCARD_DRAFT =
-  "Discard unapplied editor drafts and continue? Choose Cancel to stay and apply or save them.";
+  "You have edits which are not applied yet. Throw them away?";
 
 /* Helper functions */
 /**
@@ -90,9 +90,7 @@ export function createController(
         failure = error;
       } else {
         const text =
-          error instanceof Error
-            ? error.message
-            : "The operation could not complete.";
+          error instanceof Error ? error.message : "Something went wrong.";
         failure = new ApiError("CLIENT_ERROR", text);
       }
       patch({
@@ -179,7 +177,7 @@ export function createController(
         });
       }
       if (operation.type === "attach_evidence") patch({ importPreview: null });
-    }, "Working change accepted. Save study to keep it.");
+    }, "Change applied. Don't forget to save the study.");
   }
 
   /**
@@ -224,7 +222,7 @@ export function createController(
         sessionStorage.removeItem(SESSION_KEY);
         patch({
           status:
-            "Previous session is unavailable. Open a saved study; unsaved work may be lost.",
+            "The previous session is gone (was the service restarted?). Open the saved study again, unsaved changes are lost.",
         });
       }
     }, "");
@@ -241,7 +239,7 @@ export function createController(
       );
       received(result, before.generation);
       await listStudies();
-    }, "Study saved. Unapplied drafts are retained separately.");
+    }, "Study saved. Edits not applied yet were saved too, but stay unapplied.");
   }
 
   async function refresh() {
@@ -257,7 +255,7 @@ export function createController(
         patch({ catalogue: await api<Catalogue>("/catalogue") });
         await listStudies();
       }
-    }, "Working state refreshed; local editor text retained. Inspect accepted changes before retrying.");
+    }, "Reloaded from the service and your typing was kept. Check what was applied before trying again.");
   }
 
   async function reopen() {
@@ -291,7 +289,7 @@ export function createController(
         {},
       );
       received(result, before.generation);
-    }, "Last accepted action undone.");
+    }, "Last change undone.");
   }
 
   /* Selection */
@@ -366,7 +364,7 @@ export function createController(
       patch({
         error: {
           code: "CONNECTION_FAILED",
-          message: "Example is unavailable. Reconnect to the local service.",
+          message: "Couldn't load the example, is the service running?",
           diagnostics: [],
         },
       });

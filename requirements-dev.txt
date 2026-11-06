@@ -1,6 +1,4 @@
-# /************************************************************************
-# Name: Lukas (Viridis) Dubsik
-# ************************************************************************/
+# Runtime dependencies plus the tools used by make check
 
 -r requirements.txt
 

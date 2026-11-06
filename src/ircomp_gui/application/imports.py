@@ -155,9 +155,8 @@ class ImportService:
         ):
             raise DomainError(
                 "CONTEXT_MISMATCH",
-                "Evidence does not match the selected request "
-                "context. Obtain matching evidence or select its "
-                "actual retained revision.",
+                "This evidence was made for a different request or revision. "
+                "Choose the revision it belongs to, or get evidence for this one.",
             )
 
         # Same bundle again is fine, but only with the very same bytes
@@ -170,8 +169,8 @@ class ImportService:
         ):
             raise DomainError(
                 "BUNDLE_ID_COLLISION",
-                "Bundle identity already has different bytes. "
-                "Use a new bundle identity for changed output.",
+                "A different file with the same bundle ID is already attached. "
+                "Changed results need a new bundle ID.",
             )
         return "duplicate"
 
@@ -208,8 +207,7 @@ class ImportService:
             if len(self.previews) >= MAX_PREVIEWS:
                 raise DomainError(
                     "LIMIT_EXCEEDED",
-                    "Cancel an existing import preview before adding another "
-                    "(maximum five).",
+                    "Too many open import previews (max five), cancel one first.",
                 )
 
             # Find what the evidence is expected to match
@@ -285,7 +283,7 @@ class ImportService:
             ):
                 raise DomainError(
                     "SCHEMA_INVALID",
-                    "This request preview is not ready for acceptance.",
+                    "This request can't be opened, see the problems in the preview.",
                 )
 
             session = self.workspace.import_request(preview.parsed)
@@ -319,13 +317,14 @@ class ImportService:
             if preview.workspace_id != workspace_id or preview.kind != "evidence":
                 raise DomainError(
                     "CONTEXT_MISMATCH",
-                    "The evidence preview belongs to another workspace.",
+                    "This evidence preview belongs to another open study.",
                 )
             if preview.status == "blocked" or not isinstance(
                 preview.parsed, EvidenceBundle
             ):
                 raise DomainError(
-                    "CONTEXT_MISMATCH", "Resolve the preview problems before attaching."
+                    "CONTEXT_MISMATCH",
+                    "Fix the problems in the preview before attaching.",
                 )
             bundle = preview.parsed
 
@@ -335,7 +334,7 @@ class ImportService:
                 if existing.sha256 != hashlib.sha256(preview.raw).hexdigest():
                     raise DomainError(
                         "BUNDLE_ID_COLLISION",
-                        "Bundle identity already has different bytes.",
+                        "A different file with the same bundle ID is already attached.",
                     )
                 del self.previews[preview_id]
                 return session
@@ -346,7 +345,8 @@ class ImportService:
                 revision, bundle.context
             ):
                 raise DomainError(
-                    "CONTEXT_MISMATCH", "Evidence context changed; preview again."
+                    "CONTEXT_MISMATCH",
+                    "The study changed since the preview, import the file again.",
                 )
 
             previous = session.study.model_copy(update={"draft_buffers": buffers})

@@ -1,6 +1,5 @@
-# /************************************************************************
-# Name: Lukas (Viridis) Dubsik
-# ************************************************************************/
+# IRCOMP-GUI - Python package, Ruff and Pyright settings
+# Author: Lukas (Viridis) Dubsik
 
 [build-system]
 requires = ["hatchling==1.33.0", "editables==0.6"]

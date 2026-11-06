@@ -8,8 +8,8 @@
 
 /**
  * AI DISCLAIMER
- * 
- * These tests were generated using AI to test the 
+ *
+ * These tests were generated using AI to test the
  * application funcionalitya and refined afterwards
  * to suit the requested needs of testing.
  */
@@ -92,10 +92,7 @@ describe("Recovering from failed requests and keeping saved exports stable", () 
       );
     });
     cy.contains("button", /^Apply target$/).click();
-    cy.get('[role="alert"]').should(
-      "contain.text",
-      "local service is unavailable",
-    );
+    cy.get('[role="alert"]').should("contain.text", "reach the local service");
     cy.contains("button", /^Refresh working state$/).click();
     cy.get(".context-strip").should("contain.text", "1 accepted targets");
     readWorkspace().then((workspace) => {

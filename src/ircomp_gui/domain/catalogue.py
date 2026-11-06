@@ -91,7 +91,7 @@ class Catalogue(Value):
 
         raise DomainError(
             "REFERENCE_UNSUPPORTED",
-            "Choose an exact supported reference.",
+            "This reference is not supported.",
             "/reference_id",
         )
 

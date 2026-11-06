@@ -85,7 +85,7 @@ function TargetList(props: { context: Revision; historical: boolean }) {
         <div className="empty compact">
           <span className="empty-symbol">⌖</span>
           <h3>No accepted targets</h3>
-          <p>Add an explicit interval to start preparing the request.</p>
+          <p>Add the first interval to start.</p>
         </div>
       )}
       <div className="target-list">
@@ -110,9 +110,10 @@ function TargetList(props: { context: Revision; historical: boolean }) {
         ))}
       </div>
       <div className="panel-footer">
-        <span className="badge neutral">0-based · end-exclusive</span>
+        <span className="badge neutral">0-based, end not included</span>
         <p>
-          Labels help navigation. Accessions and revision IDs establish context.
+          Labels are only for you, the request itself uses the accessions and
+          coordinates.
         </p>
       </div>
     </aside>
@@ -144,7 +145,7 @@ function TargetForm(props: EditorProps) {
 
   function remove() {
     const label = labels[selected!.target_id];
-    const question = `Remove ${label} from the active request? Older evidence remains attached to its original revision. You can undo before Save.`;
+    const question = `Remove ${label}? Evidence of the older revisions stays as it is. Undo works until you save.`;
     if (!window.confirm(question)) return;
     void controller.command({
       type: "remove_target",
@@ -174,7 +175,7 @@ function TargetForm(props: EditorProps) {
           value={draft.label}
           onChange={(event) => update("label", event.target.value)}
           maxLength={MAX_LABEL}
-          placeholder="A short, recognizable label"
+          placeholder="e.g. exon 2"
         />
         <label htmlFor="target-contig">Contig accession</label>
         <select
@@ -221,8 +222,8 @@ function TargetForm(props: EditorProps) {
           </div>
         </div>
         <p className="hint">
-          The first base is 0; End is outside the interval. Start must be
-          smaller than End.
+          Counting starts at 0 and End itself is not included, so 100 to 200
+          means 100 bases.
         </p>
         <label htmlFor="target-strand">Strand</label>
         <select
@@ -274,7 +275,7 @@ function TargetForm(props: EditorProps) {
         )}
       </div>
       <p className="hint">
-        Apply changes the working model. Save study writes it to local storage.
+        Apply changes the open study, Save study writes it to the disk.
       </p>
     </form>
   );
@@ -307,7 +308,7 @@ function TargetEditor(
         <div className="empty">
           <span className="empty-symbol">⌖</span>
           <h3>Choose or add a target</h3>
-          <p>Accepted intervals remain separate from unfinished editor text.</p>
+          <p>Pick a target on the left or add a new one.</p>
           <button
             className="secondary"
             disabled={props.historical || state.busy}
@@ -352,8 +353,8 @@ function ContextPanel(props: { context: Revision; reference: Reference }) {
         </div>
       </dl>
       <p className="hint">
-        Catalogue bounds are checked. Sequence availability, PAMs and biological
-        suitability are not.
+        Only the contig lengths are checked here. The sequence, PAMs and whether
+        the target makes sense biologically aren't.
       </p>
     </section>
   );
@@ -396,8 +397,7 @@ function ProblemsPanel(props: {
         ))
       ) : (
         <p className="hint">
-          No blocking issues in accepted values. Run checks to inspect the local
-          validation scope.
+          No problems found. Check request shows what is (and isn't) checked.
         </p>
       )}
       {state.validation?.checks.map((check) => (
@@ -454,8 +454,7 @@ function ContextEditor(props: { context: Revision }) {
             value: {
               error: {
                 code: "INTERVAL_INVALID",
-                message:
-                  "Enter explicit whole-number coordinates for every replacement target.",
+                message: "Every target needs whole-number coordinates.",
                 diagnostics: [],
               },
             },
@@ -483,9 +482,9 @@ function ContextEditor(props: { context: Revision }) {
     <details className="panel context-editor">
       <summary>Change reference or analysis profile</summary>
       <p className="hint">
-        A change creates a new request revision. Existing evidence stays with
-        its old context. Enter accession-qualified intervals explicitly; no
-        coordinate conversion is performed.
+        Changing these creates a new revision, the evidence you already have
+        stays with the old one. Coordinates aren't converted between references,
+        so enter them for the new one yourself.
       </p>
       <div className="form-row">
         <div>
@@ -517,7 +516,7 @@ function ContextEditor(props: { context: Revision }) {
         <div className="context-target" key={target.target_id}>
           <strong>{labels[target.target_id]}</strong>
           <label>
-            Replacement contig
+            New contig
             <select
               value={value(target, "contig")}
               onChange={(event) =>
@@ -531,7 +530,7 @@ function ContextEditor(props: { context: Revision }) {
                 (item) => item.accession === target.contig,
               ) && (
                 <option value={target.contig}>
-                  {target.contig} — choose compatible accession
+                  {target.contig} (not in this reference)
                 </option>
               )}
               {replacement.contigs.map((item) => (
@@ -540,7 +539,7 @@ function ContextEditor(props: { context: Revision }) {
             </select>
           </label>
           <label>
-            Replacement start
+            New start
             <input
               inputMode="numeric"
               value={value(target, "start")}
@@ -553,7 +552,7 @@ function ContextEditor(props: { context: Revision }) {
             />
           </label>
           <label>
-            Replacement end (exclusive)
+            New end (not included)
             <input
               inputMode="numeric"
               value={value(target, "end")}
@@ -601,10 +600,7 @@ export function PrepareView() {
         <div>
           <p className="eyebrow">01 / Prepare</p>
           <h1>Prepare the request</h1>
-          <p>
-            Define targets and their reference context. Check what can be
-            checked locally.
-          </p>
+          <p>Set the targets and the reference they are on.</p>
         </div>
         <button
           className="secondary"
@@ -616,8 +612,8 @@ export function PrepareView() {
       </div>
       {historical && (
         <p className="notice">
-          Viewing a retained revision. Its intervals are read-only; review and
-          export keep this exact context. Select the active revision to edit.
+          This is an older revision, so it can't be edited. Its evidence and
+          exports still use it. Choose the active revision to make changes.
         </p>
       )}
       <div className="prepare-grid">

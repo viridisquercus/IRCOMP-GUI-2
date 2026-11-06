@@ -180,12 +180,15 @@ export function draftProblems(
   const contig = reference?.contigs.find(
     (item) => item.accession === draft.contig,
   );
-  if (!contig) add("contig", "Choose an exact supported contig accession.");
+  if (!contig) add("contig", "Choose one of the contigs of this reference.");
 
   let numbersValid = true;
   for (const field of ["start", "end"] as const) {
     if (!isWholeNumber(draft[field])) {
-      add(field, `Enter a nonnegative whole number for ${field}.`);
+      add(
+        field,
+        `${field === "start" ? "Start" : "End"} has to be a whole number (0 or more).`,
+      );
       numbersValid = false;
     }
   }
@@ -196,7 +199,10 @@ export function draftProblems(
   const end = Number(draft.end);
   if (start >= end || (contig && end > contig.length)) {
     const length = contig?.length.toLocaleString() ?? "contig length";
-    add("end", `Require 0 ≤ start < end ≤ ${length} (end-exclusive).`);
+    add(
+      "end",
+      `Start has to be smaller than end, and end at most ${length} (end is not included).`,
+    );
   }
   return errors;
 }

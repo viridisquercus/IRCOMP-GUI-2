@@ -1,6 +1,5 @@
-# /************************************************************************
-# Name: Lukas (Viridis) Dubsik
-# ************************************************************************/
+# IRCOMP-GUI - install, build, run, check, test and pack
+# Author: Lukas (Viridis) Dubsik
 
 PYTHON ?= python3
 

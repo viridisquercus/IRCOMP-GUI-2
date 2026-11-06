@@ -124,8 +124,8 @@ function CandidateList(props: {
       </div>
       {!records.length && (
         <p className="hint">
-          The source supplied no candidate records. This does not establish a
-          negative scientific search result.
+          The file has no candidates. That doesn't mean there aren't any, only
+          that none were sent.
         </p>
       )}
       {records.map((item) => (
@@ -176,7 +176,7 @@ function EvidenceDetail(props: { record: CandidateRecord | undefined }) {
     <section className="panel evidence-detail">
       <div className="panel-heading">
         <div>
-          <p className="eyebrow">Immutable source evidence</p>
+          <p className="eyebrow">Imported evidence (read-only)</p>
           <h2>{record?.candidate.label ?? "No supplied candidates"}</h2>
         </div>
         {record && (
@@ -210,9 +210,8 @@ function EvidenceDetail(props: { record: CandidateRecord | undefined }) {
             <p className="notice">No metrics were supplied for this record.</p>
           )}
           <p className="hint">
-            Zero is a supplied value. Missing, unsupported, failed and unknown
-            remain distinct. Scores are not combined into a universal
-            confidence.
+            A 0 is a real value, a missing score is shown as missing. Scores
+            from different tools are never combined.
           </p>
           <details>
             <summary>Inspect original record &amp; provenance</summary>
@@ -237,7 +236,7 @@ function EvidenceDetail(props: { record: CandidateRecord | undefined }) {
             </dl>
             {record.bundle.dependencies.map((dependency, index) => (
               <p key={index} className="hint">
-                External: {dependency.uri} — {dependency.description}
+                External: {dependency.uri} ({dependency.description})
               </p>
             ))}
           </details>
@@ -255,7 +254,7 @@ function ManageCollections(props: { collection: Collection | undefined }) {
   const noName = state.busy || !name?.trim();
 
   function remove(item: Collection) {
-    const question = `Remove ${item.name} and its ${item.memberships.length} membership decisions? Source evidence remains. Undo is available before Save.`;
+    const question = `Remove ${item.name} with its ${item.memberships.length} decisions? The evidence stays. Undo works until you save.`;
     if (!window.confirm(question)) return;
     void controller.command({
       type: "remove_collection",
@@ -348,7 +347,7 @@ function DecisionForm(props: {
   }
 
   function removeMember() {
-    const question = `Remove ${record.candidate.label} from ${collection.name}? Its source evidence remains.`;
+    const question = `Remove ${record.candidate.label} from ${collection.name}? The evidence stays.`;
     if (!window.confirm(question)) return;
     void controller.command({
       type: "remove_member",
@@ -385,11 +384,11 @@ function DecisionForm(props: {
         value={decision.rationale}
         onChange={(event) => update({ rationale: event.target.value })}
         maxLength={MAX_RATIONALE}
-        placeholder="What supports this decision? What remains uncertain?"
+        placeholder="Why this decision? Anything still unclear?"
       />
       {decision.disposition !== "undecided" && !decision.rationale.trim() && (
         <p className="field-error">
-          A blank rationale keeps this decision incomplete.
+          Without a reason the decision still counts as unfinished.
         </p>
       )}
       <details>
@@ -432,10 +431,7 @@ function DecisionForm(props: {
           Remove from collection
         </button>
       </div>
-      <p className="hint">
-        This disposition applies only to this collection. It is not scientific
-        approval or permission to execute.
-      </p>
+      <p className="hint">The decision only applies in this collection.</p>
     </form>
   );
 }
@@ -469,7 +465,7 @@ function DecisionPanel(props: {
   } else if (record && collection) {
     body = (
       <div className="empty compact">
-        <p>This candidate is not a member of the selected collection.</p>
+        <p>This candidate isn't in the collection yet.</p>
         <button
           disabled={state.busy}
           onClick={() =>
@@ -490,7 +486,7 @@ function DecisionPanel(props: {
     <aside className="panel decision-panel">
       <div className="panel-heading">
         <div>
-          <p className="eyebrow">Editable review layer</p>
+          <p className="eyebrow">Your decision</p>
           <h2>Collection &amp; decision</h2>
         </div>
       </div>
@@ -529,23 +525,23 @@ function NoEvidence() {
       <span className="empty-symbol">≋</span>
       <h2>No evidence attached to this revision</h2>
       <p>
-        Import a local <span className="mono">.evidence.json</span> file. The
-        preview checks exact request, reference and revision context before
-        attachment.
+        Import an <span className="mono">.evidence.json</span> file. Before it
+        is attached, the preview checks it was made for this request and
+        revision.
       </p>
       <p className="hint">
-        Import means received, not executed or scientifically verified.
+        Importing only stores the file, nothing in it is checked scientifically.
       </p>
       <button
         className="secondary"
         disabled={state.busy}
         onClick={() => void controller.sample("evidence-valid.json")}
       >
-        Inspect synthetic example
+        Try the example evidence
       </button>
       <p className="hint">
-        The shipped example matches the sample request only. Other contexts
-        receive an honest mismatch.
+        The example only fits the sample request, in any other study it is
+        refused (on purpose).
       </p>
     </section>
   );
@@ -570,9 +566,7 @@ export function ReviewView() {
   function select(candidate: CandidateKey | null, collectionId?: string) {
     if (
       state.buffers.decision &&
-      !window.confirm(
-        "Discard the unapplied decision draft? Cancel to stay and apply it first.",
-      )
+      !window.confirm("Throw away the decision you haven't applied yet?")
     )
       return;
     dispatch({ type: "draft", buffers: { ...state.buffers, decision: null } });
@@ -587,10 +581,9 @@ export function ReviewView() {
       <div className="section-intro">
         <div>
           <p className="eyebrow">02 / Review</p>
-          <h1>Keep evidence and judgment distinct.</h1>
+          <h1>Review the evidence</h1>
           <p>
-            Inspect source-specific observations, then record a
-            collection-specific decision.
+            Go through the imported candidates and decide about each of them.
           </p>
         </div>
         <label className={`file-button ${state.busy ? "disabled" : ""}`}>

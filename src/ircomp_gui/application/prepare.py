@@ -159,8 +159,7 @@ class PrepareService:
         if new_ids != old_ids:
             raise DomainError(
                 "DANGLING_REFERENCE",
-                "Context replacement must preserve exactly the active target "
-                "identities.",
+                "Changing the context has to keep the same targets.",
             )
         return revision.model_copy(
             update={
@@ -189,8 +188,8 @@ class PrepareService:
         if len(study.revisions) >= MAX_REVISIONS:
             raise DomainError(
                 "LIMIT_EXCEEDED",
-                "The 200-revision limit is reached. Duplicate the active "
-                "request to start a new study.",
+                "The study has 200 revisions, which is the limit. "
+                "Duplicate the request to continue in a new study.",
             )
 
         # Add the proposal as a new active revision

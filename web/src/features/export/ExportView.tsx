@@ -29,20 +29,20 @@ const KINDS: ExportKind[] = ["request", "review"];
 // Title and description of each kind of export
 const KIND_TEXT: Record<ExportKind, { title: string; text: string }> = {
   request: {
-    title: "Local request snapshot",
-    text: "One exact request revision and its labels. No drafts or review state.",
+    title: "Request file",
+    text: "One revision with its targets, ready to be analysed.",
   },
   review: {
     title: "Review / evidence package",
-    text: "Selected collections, decisions and complete original evidence bytes.",
+    text: "The chosen collections and decisions, with the original evidence files.",
   },
 };
 
 /* Helper functions */
 function previewTitle(preview: ExportPreview): string {
   if (preview.review_status === "draft") return "Draft review";
-  if (preview.kind === "request") return "Request snapshot";
-  return "Review bookkeeping complete";
+  if (preview.kind === "request") return "Request file";
+  return "Review complete";
 }
 
 /* Components */
@@ -142,7 +142,7 @@ function PreviewPanel(props: { preview: ExportPreview }) {
     <section className="panel export-preview" aria-label="Export preview">
       <div className="panel-heading">
         <div>
-          <p className="eyebrow">Frozen saved snapshot</p>
+          <p className="eyebrow">From the saved study</p>
           <h2>{previewTitle(preview)}</h2>
         </div>
         <span className={`badge ${draft ? "amber" : "teal"}`}>
@@ -159,13 +159,11 @@ function PreviewPanel(props: { preview: ExportPreview }) {
       </div>
       <p>
         {preview.kind === "review"
-          ? "Original source files are included byte-for-byte. External dependencies are declared and have not been fetched."
-          : "This is a local request file, not a compiled workflow or an IRCOMP-compatible YAML specification."}
+          ? "The original evidence files are included unchanged. External files they refer to are only listed, not downloaded."
+          : "This is a plain JSON request, not an IRCOMP YAML specification (yet)."}
       </p>
       {preview.review_status === "reviewed" && (
-        <p className="notice">
-          Review bookkeeping complete; scientific conclusions not verified.
-        </p>
+        <p className="notice">Every decision has a reason now.</p>
       )}
       <dl className="metadata">
         <div>
@@ -193,7 +191,7 @@ function PreviewPanel(props: { preview: ExportPreview }) {
         download
         href={`/api/v1/exports/${preview.export_id}/file`}
       >
-        {draft ? "Download draft review" : "Download snapshot"} ↓
+        {draft ? "Download draft review" : "Download snapshot"}
       </a>
     </section>
   );
@@ -220,34 +218,30 @@ export function ExportView() {
         <div>
           <p className="eyebrow">03 / Export</p>
           <h1>Export the study</h1>
-          <p>
-            Inspect the saved revision, source records and unresolved decisions
-            before downloading.
-          </p>
+          <p>Check what goes into the file before downloading it.</p>
         </div>
       </div>
       <div className="export-grid">
         <section className="panel">
           <div className="panel-heading">
-            <h2>Choose the handover</h2>
+            <h2>What to export</h2>
           </div>
           <ExportOptions />
           {neverSaved && (
             <p className="notice">
-              Save the study before generating an export.
+              Save the study first, only saved data can be exported.
             </p>
           )}
           {unsaved && (
             <p className="notice">
-              There are unsaved changes. Apply pending edits and Save, or
-              explicitly export the last saved snapshot. Its values may differ
-              from the working view.
+              There are unsaved changes. Save first, or use Export last saved
+              (it won't contain the newer changes).
             </p>
           )}
           {drafts && (
             <p className="notice">
-              Unapplied editor drafts are excluded from exports, even when saved
-              for recovery. Apply them first to include their values.
+              Edits which aren't applied are never exported. Apply them first if
+              you want them in.
             </p>
           )}
           <div className="actions wrap">
@@ -276,7 +270,7 @@ export function ExportView() {
         </section>
         <aside className="panel">
           <div className="panel-heading">
-            <h2>Selected context</h2>
+            <h2>Exported from</h2>
           </div>
           <dl className="metadata">
             <div>
@@ -292,7 +286,7 @@ export function ExportView() {
               <dd>{context.reference_id}</dd>
             </div>
             <div>
-              <dt>Working target count</dt>
+              <dt>Targets (open study)</dt>
               <dd>{context.targets.length}</dd>
             </div>
             <div>
@@ -301,8 +295,7 @@ export function ExportView() {
             </div>
           </dl>
           <p className="hint">
-            The frozen export preview below is authoritative for the downloaded
-            file.
+            The preview below shows exactly what the downloaded file contains.
           </p>
         </aside>
       </div>

@@ -94,7 +94,7 @@ class Exchange:
         if set(request.target_labels) != target_ids:
             raise DomainError(
                 "DANGLING_REFERENCE",
-                "Request labels must cover its target identities exactly.",
+                "Every target in the request needs exactly one label.",
             )
         return request
 
@@ -169,7 +169,7 @@ class Exchange:
             if decoded != item.bundle or checksum(raw) != item.sha256:
                 raise DomainError(
                     "SCHEMA_INVALID",
-                    "Stored evidence bytes, digest or parsed contents disagree.",
+                    "Stored evidence is damaged (checksum or contents don't match).",
                 )
 
     def evidence_file(self, raw: bytes, bundle: EvidenceBundle) -> EvidenceFile:

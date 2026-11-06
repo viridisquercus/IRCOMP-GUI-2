@@ -49,7 +49,7 @@ export async function api<T>(
     // fetch only throws when the service can't be reached at all
     throw new ApiError(
       "CONNECTION_FAILED",
-      "The local service is unavailable. Keep your inputs and refresh working state before retrying.",
+      "Can't reach the local service. Your input is still here, use Refresh working state once it runs again.",
     );
   }
 
@@ -58,7 +58,7 @@ export async function api<T>(
     const failure = await response.json().catch(() => null);
     throw new ApiError(
       failure?.error?.code ?? "HTTP_ERROR",
-      failure?.error?.message ?? "The operation could not complete.",
+      failure?.error?.message ?? "Something went wrong.",
       failure?.error?.diagnostics ?? [],
     );
   }
@@ -76,7 +76,10 @@ export async function api<T>(
  */
 export async function fileBase64(file: File): Promise<string> {
   if (file.size > MAX_FILE)
-    throw new ApiError("LIMIT_EXCEEDED", "Choose a file no larger than 1 MiB.");
+    throw new ApiError(
+      "LIMIT_EXCEEDED",
+      "The file is too big, the limit is 1 MiB.",
+    );
 
   // btoa needs a binary string, one character per byte
   const bytes = new Uint8Array(await file.arrayBuffer());

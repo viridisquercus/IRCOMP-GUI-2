@@ -112,7 +112,7 @@ class SQLiteRepository:
         if version not in {0, DATABASE_VERSION}:
             raise DomainError(
                 "SCHEMA_INVALID",
-                "Unsupported database layout; the file was not changed.",
+                "Unknown database layout, the file was left untouched.",
             )
         tables = [row[0] for row in connection.execute(LIST_TABLES).fetchall()]
 
@@ -121,7 +121,7 @@ class SQLiteRepository:
             if tables:
                 raise DomainError(
                     "SCHEMA_INVALID",
-                    "Unversioned database contains data; it was not changed.",
+                    "The database has data but no version, it was left untouched.",
                 )
             connection.execute("BEGIN IMMEDIATE")
             try:
@@ -139,7 +139,7 @@ class SQLiteRepository:
         if tables != ["studies"] or columns != COLUMNS:
             raise DomainError(
                 "SCHEMA_INVALID",
-                "Database layout is invalid; the file was not changed.",
+                "The database layout is wrong, the file was left untouched.",
             )
 
     def list(self) -> list[StudySummary]:
@@ -201,7 +201,8 @@ class SQLiteRepository:
             or document["storage_version"] != STORAGE_VERSION
         ):
             raise DomainError(
-                "SCHEMA_INVALID", "Unsupported stored document; it was not changed."
+                "SCHEMA_INVALID",
+                "Unknown format of the saved study, it was left untouched.",
             )
 
         # The columns have to say the same as the document
@@ -213,7 +214,7 @@ class SQLiteRepository:
         ):
             raise DomainError(
                 "SCHEMA_INVALID",
-                "Stored study metadata disagrees with its document.",
+                "The saved study doesn't match its database row.",
             )
         return study
 
@@ -249,7 +250,7 @@ class SQLiteRepository:
             )
         except (ValidationError, ValueError, TypeError) as error:
             raise DomainError(
-                "SCHEMA_INVALID", "Stored study is invalid; it was not changed."
+                "SCHEMA_INVALID", "The saved study is damaged, it was left untouched."
             ) from error
         except sqlite3.Error as error:
             raise DomainError(
@@ -296,11 +297,11 @@ class SQLiteRepository:
         except sqlite3.IntegrityError as error:
             raise DomainError(
                 "IDENTITY_CONFLICT",
-                "This request identity belongs to another saved study.",
+                "This request is already saved as another study.",
             ) from error
         except sqlite3.Error as error:
             raise DomainError(
                 "PERSISTENCE_UNAVAILABLE",
-                "Save failed. Working changes remain available; "
-                "retry when storage is writable.",
+                "Saving failed, your changes are still here. "
+                "Try again once the disk is writable.",
             ) from error
