@@ -1,0 +1,378 @@
+/**
+ * @file App.css
+ * @brief Frame of the application - header, toolbar, welcome page, footer
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
+
+/* Header */
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -80px;
+  background: white;
+  z-index: 5;
+  padding: 12px;
+}
+.skip-link:focus {
+  top: 8px;
+}
+.app-header {
+  height: 78px;
+  background: white;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 42px;
+}
+.brand {
+  color: var(--ink);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+.brand strong {
+  font-size: 21px;
+  letter-spacing: 1.5px;
+}
+.brand svg {
+  width: 31px;
+  height: 31px;
+  stroke: var(--teal);
+  fill: white;
+  stroke-width: 1.8;
+}
+.brand-divider {
+  height: 25px;
+  width: 1px;
+  background: var(--line);
+  margin: 0 3px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.local-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.local-indicator i,
+.context-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--teal);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Page */
+main {
+  max-width: 1540px;
+  padding: 32px 42px 0;
+  margin: auto;
+}
+
+/* Study title and save controls */
+.workspace-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 17px;
+}
+.workspace-heading h2 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  overflow-wrap: anywhere;
+}
+.save-controls {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+.save-status {
+  font-size: 12px;
+  color: var(--teal);
+  margin-right: 10px;
+}
+.save-status.unsaved {
+  color: #836126;
+}
+
+/* New / Open / Rename / Duplicate */
+.study-controls {
+  padding: 11px 16px;
+  margin-bottom: 18px;
+}
+.study-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  padding: 20px 0 7px;
+}
+.study-controls-grid button {
+  margin-top: 12px;
+}
+.import-request-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.import-request-control .file-button {
+  margin: 8px 0;
+}
+
+/* Error and status */
+.error-banner {
+  padding: 16px 20px;
+  background: #fff3ef;
+  border: 1px solid #e6c4b9;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+  color: #8d392f;
+  font-size: 12px;
+}
+.error-banner small {
+  display: block;
+  margin-top: 7px;
+}
+.error-banner .actions {
+  margin-top: 0;
+}
+.live-status {
+  color: var(--teal);
+  font-size: 12px;
+  min-height: 18px;
+  margin: 8px 0;
+}
+
+/* Toolbar with the views and revision */
+.workspace-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+nav {
+  display: flex;
+  gap: 25px;
+}
+nav button {
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  padding: 15px 0;
+  gap: 9px;
+  font-size: 13px;
+}
+nav button:hover {
+  background: transparent;
+  color: var(--ink);
+}
+nav button.active {
+  color: var(--teal);
+  border-bottom-color: var(--teal);
+}
+nav button span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.revision-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.revision-choice select {
+  width: auto;
+  padding: 7px 25px 7px 10px;
+  font-size: 11px;
+}
+.context-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding: 13px 0;
+  font-size: 10px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+.context-strip span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.context-strip strong {
+  font-weight: 600;
+  color: #846020;
+  margin-left: auto;
+}
+
+/* Welcome page */
+.welcome-grid {
+  padding: 55px 40px 65px;
+  margin: 32px 0;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 80px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.welcome-copy h1 {
+  font-size: 45px;
+  font-weight: 540;
+  letter-spacing: -1.6px;
+  margin: 19px 0 20px;
+}
+.welcome-copy p {
+  max-width: 460px;
+}
+.welcome-copy .hint {
+  margin-top: 14px;
+  font-size: 10px;
+}
+.welcome-steps article {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 27px 0;
+  border-bottom: 1px solid var(--line);
+}
+.welcome-steps article:last-child {
+  border-bottom: 0;
+}
+.welcome-steps article > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.welcome-steps p {
+  font-size: 12px;
+  margin: 0;
+}
+.saved-study-row {
+  background: transparent;
+  width: 100%;
+  justify-content: space-between;
+  color: var(--ink);
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  padding: 17px 0;
+  font-size: 12px;
+}
+.saved-study-row:hover {
+  background: #f4f8f2;
+}
+.saved-study-row span {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* Footer */
+.workspace-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 28px 0 25px;
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* Narrow screens */
+@media (max-width: 1200px) {
+  main {
+    padding: 25px 24px 0;
+  }
+  .app-header {
+    padding: 0 24px;
+  }
+  .welcome-grid {
+    gap: 35px;
+    padding: 35px;
+  }
+}
+@media (max-width: 760px) {
+  main {
+    padding: 20px 16px 0;
+  }
+  .app-header {
+    height: 65px;
+    padding: 0 16px;
+  }
+  .brand {
+    gap: 8px;
+    font-size: 11px;
+  }
+  .brand strong {
+    font-size: 16px;
+  }
+  .brand svg {
+    width: 25px;
+  }
+  .header-right {
+    display: none;
+  }
+  .workspace-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .save-controls {
+    flex-wrap: wrap;
+  }
+  .workspace-heading h2 {
+    font-size: 20px;
+  }
+  .welcome-grid,
+  .study-controls-grid {
+    grid-template-columns: 1fr;
+  }
+  .workspace-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-bottom: 12px;
+  }
+  nav {
+    gap: 23px;
+  }
+  .context-strip {
+    gap: 8px;
+  }
+  .context-strip strong {
+    margin-left: 0;
+  }
+  .welcome-grid {
+    padding: 30px 22px;
+    gap: 10px;
+  }
+  .welcome-copy h1 {
+    font-size: 35px;
+  }
+  .error-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .workspace-footer {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

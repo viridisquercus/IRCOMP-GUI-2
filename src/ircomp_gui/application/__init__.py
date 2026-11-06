@@ -1,5 +1,9 @@
-# /************************************************************************
-# Name: Lukas (Viridis) Dubsik
-# ************************************************************************/
+# ************************************************************************
+# @file __init__.py
+# @brief Services working with the studies
+# @author Lukas (Viridis) Dubsik
+# @date 6-11-2026
+# @version 0.1
+# ************************************************************************
 
-"""Handle changes to the study independently of the GUI."""
+"""Define the operations working with the studies."""

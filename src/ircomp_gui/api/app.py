@@ -1,6 +1,16 @@
-# /************************************************************************
-# Name: Lukas (Viridis) Dubsik
-# ************************************************************************/
+# ************************************************************************
+# @file app.py
+# @brief HTTP interface of the application and serving of the GUI
+# @author Lukas (Viridis) Dubsik
+# @date 6-11-2026
+# @version 0.1
+#
+# Detailed description:
+#  The routes only translate HTTP to the services and back, no logic of
+#  its own is here. Every request firstly passes LocalBoundary, which
+#  refuses foreign hosts and origins and checks the JSON body before any
+#  route reads it.
+# ************************************************************************
 
 """Connect the application functions to HTTP and serve the GUI."""
 
@@ -20,7 +30,7 @@ from pydantic import ValidationError
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from ircomp_gui.adapters.exchange import Exchange
-from ircomp_gui.adapters.resources import load_catalogue, resource_path
+from ircomp_gui.adapters.resources import REPOSITORY, load_catalogue, resource_path
 from ircomp_gui.adapters.sqlite import SQLiteRepository
 from ircomp_gui.api.requests import (
     CloseInput,
@@ -39,36 +49,84 @@ from ircomp_gui.application.commands import AttachEvidence
 from ircomp_gui.application.export import ExportService
 from ircomp_gui.application.imports import ImportService
 from ircomp_gui.application.workspace import WorkspaceService
+from ircomp_gui.domain.constants import (
+    MAX_BODY,
+    MAX_BUNDLES,
+    MAX_COLLECTIONS,
+    MAX_FILE,
+    MAX_MEMBERSHIPS,
+    MAX_REVISIONS,
+    MAX_TARGETS,
+)
 from ircomp_gui.domain.errors import DomainError
 from ircomp_gui.domain.serialization import parse_json
 
 LOG = logging.getLogger(__name__)
 
+# HTTP status of each error code, anything else is 422
+ERROR_STATUS = {
+    "MALFORMED_JSON": 400,
+    "DUPLICATE_KEY": 400,
+    "INVALID_BASE64": 400,
+    "ORIGIN_REJECTED": 403,
+    "NOT_FOUND": 404,
+    "SESSION_EXPIRED": 404,
+    "PREVIEW_EXPIRED": 404,
+    "IDENTITY_EXISTS": 409,
+    "IDENTITY_CONFLICT": 409,
+    "BUNDLE_ID_COLLISION": 409,
+    "UNDO_UNAVAILABLE": 409,
+    "LIMIT_EXCEEDED": 413,
+    "INTERNAL_ERROR": 500,
+    "PERSISTENCE_UNAVAILABLE": 503,
+}
+# Origins used when none are given - the service and the Vite dev server
+DEFAULT_ORIGINS = {
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+}
+# Example files which can be downloaded
+EXAMPLES = {
+    "request-valid.json",
+    "evidence-valid.json",
+    "evidence-context-mismatch.json",
+    "evidence-empty.json",
+}
+# Methods which don't change anything and so need no body
+SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
+
 
 def error_status(code: str) -> int:
-    """Choose the HTTP status for an application error code."""
-    if code in {"MALFORMED_JSON", "DUPLICATE_KEY", "INVALID_BASE64"}:
-        return 400
-    if code in {"NOT_FOUND", "SESSION_EXPIRED", "PREVIEW_EXPIRED"}:
-        return 404
-    if code in {
-        "IDENTITY_EXISTS",
-        "IDENTITY_CONFLICT",
-        "BUNDLE_ID_COLLISION",
-        "UNDO_UNAVAILABLE",
-    }:
-        return 409
-    if code == "LIMIT_EXCEEDED":
-        return 413
-    if code == "ORIGIN_REJECTED":
-        return 403
-    if code == "PERSISTENCE_UNAVAILABLE":
-        return 503
-    return 500 if code == "INTERNAL_ERROR" else 422
+    """Choose the HTTP status for an error code.
+
+    Parameters
+    ----------
+    code : str
+        Code of the DomainError
+
+    Returns
+    -------
+    int
+        HTTP status
+    """
+    return ERROR_STATUS.get(code, 422)
 
 
 def error_response(error: DomainError) -> JSONResponse:
-    """Prepare the JSON error response read by the client."""
+    """Prepare the JSON error response read by the client.
+
+    Parameters
+    ----------
+    error : DomainError
+        Error to send
+
+    Returns
+    -------
+    JSONResponse
+        Response with the code, message and diagnostics
+    """
     return JSONResponse(
         status_code=error_status(error.code),
         content={
@@ -82,7 +140,17 @@ def error_response(error: DomainError) -> JSONResponse:
 
 
 class LocalBoundary:
-    """Check local requests before passing their body to a route."""
+    """Check the local requests before their body reaches a route.
+
+    Attributes
+    ----------
+    app : ASGIApp
+        The wrapped application
+    origins : set[str]
+        Allowed origins (scheme, host and port)
+    hosts : set[str]
+        Allowed values of the Host header
+    """
 
     def __init__(self, app: ASGIApp, origins: set[str]) -> None:
         self.app = app
@@ -90,57 +158,81 @@ class LocalBoundary:
         self.hosts = {urlsplit(origin).netloc for origin in origins}
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        """Check the local address and request size before reading JSON."""
+        """Check the local address and size of the request before reading JSON.
+
+        Parameters
+        ----------
+        scope : Scope
+            ASGI connection scope
+        receive : Receive
+            ASGI receive channel
+        send : Send
+            ASGI send channel
+        """
+        # Only HTTP is checked (lifespan events go through)
         if scope["type"] != "http":
             await self.app(scope, receive, send)
             return
+
         headers = dict(scope["headers"])
         host = headers.get(b"host", b"").decode("latin1")
         origin = headers.get(b"origin", b"").decode("latin1")
-        changing = scope["method"] not in {"GET", "HEAD", "OPTIONS"}
+
         try:
+            # Refuse anything not addressed to us, protects from DNS rebinding
             if host not in self.hosts or (origin and origin not in self.origins):
                 raise DomainError(
                     "ORIGIN_REJECTED",
                     "Use this application's configured local address.",
                 )
-            if changing:
-                if (
-                    headers.get(b"content-type", b"").split(b";")[0].strip()
-                    != b"application/json"
-                ):
-                    raise DomainError(
-                        "SCHEMA_INVALID", "Changing requests require application/json."
-                    )
-                raw = bytearray()
-                more = True
-                while more:
-                    event = await receive()
-                    if event["type"] == "http.disconnect":
-                        return
-                    raw.extend(event.get("body", b""))
-                    if len(raw) > 2 * 1024 * 1024:
-                        raise DomainError("LIMIT_EXCEEDED", "HTTP body exceeds 2 MiB.")
-                    more = event.get("more_body", False)
-                _ = parse_json(bytes(raw), limit=2 * 1024 * 1024)
-                delivered = False
 
-                async def cached_receive() -> Message:
-                    nonlocal delivered
-                    if not delivered:
-                        delivered = True
-                        return {
-                            "type": "http.request",
-                            "body": bytes(raw),
-                            "more_body": False,
-                        }
-                    return await receive()
-
-                await self.app(scope, cached_receive, send)
-            else:
+            if scope["method"] in SAFE_METHODS:
                 await self.app(scope, receive, send)
+                return
+
+            raw = await self._read_body(headers, receive)
+            if raw is None:
+                return
+
+            # Give the route the body we already read
+            delivered = False
+
+            async def cached_receive() -> Message:
+                nonlocal delivered
+                if not delivered:
+                    delivered = True
+                    return {"type": "http.request", "body": raw, "more_body": False}
+                return await receive()
+
+            await self.app(scope, cached_receive, send)
         except DomainError as error:
             await error_response(error)(scope, receive, send)
+
+    async def _read_body(
+        self, headers: dict[bytes, bytes], receive: Receive
+    ) -> bytes | None:
+        # Changing requests have to be JSON - a form can't be sent cross site then
+        content_type = headers.get(b"content-type", b"").split(b";")[0].strip()
+        if content_type != b"application/json":
+            raise DomainError(
+                "SCHEMA_INVALID", "Changing requests require application/json."
+            )
+
+        # Read the whole body, but stop as soon as it is too big
+        raw = bytearray()
+        more = True
+        while more:
+            event = await receive()
+            if event["type"] == "http.disconnect":
+                return None
+            raw.extend(event.get("body", b""))
+            if len(raw) > MAX_BODY:
+                raise DomainError("LIMIT_EXCEEDED", "HTTP body exceeds 2 MiB.")
+            more = event.get("more_body", False)
+
+        # Check it is a valid JSON object (no duplicates, NaN, deep nesting)
+        parse_json(bytes(raw), limit=MAX_BODY)
+        return bytes(raw)
 
 
 def create_app(
@@ -149,39 +241,49 @@ def create_app(
     web_directory: Path | None = None,
     origins: set[str] | None = None,
 ) -> FastAPI:
-    """Create the application using the selected database and web directory."""
+    """Create the application with the chosen database and web directory.
+
+    Parameters
+    ----------
+    database : Path | None
+        Path to the SQLite file, by default IRCOMP_GUI_DATABASE or
+        ~/.local/share/ircomp-gui/workspace.sqlite3
+    web_directory : Path | None
+        Built web client, by default IRCOMP_GUI_WEB or web/dist
+    origins : set[str] | None
+        Allowed origins, by default DEFAULT_ORIGINS
+
+    Returns
+    -------
+    FastAPI
+        The application ready to be run by uvicorn
+    """
+    # Build the services
     catalogue = load_catalogue()
     exchange = Exchange(catalogue)
-    database = database or Path(
-        os.environ.get(
-            "IRCOMP_GUI_DATABASE",
-            str(Path.home() / ".local/share/ircomp-gui/workspace.sqlite3"),
-        )
-    )
+    if database is None:
+        default = Path.home() / ".local/share/ircomp-gui/workspace.sqlite3"
+        database = Path(os.environ.get("IRCOMP_GUI_DATABASE", str(default)))
     repository = SQLiteRepository(database, catalogue, exchange)
     workspace = WorkspaceService(repository, catalogue)
     imports = ImportService(workspace, exchange)
     exports = ExportService(workspace, exchange)
+
     app = FastAPI(
         title="IRCOMP Study Workspace",
         version="0.1.0",
-        description=(
-            "Local request editing and evidence review. No compiler or "
-            "scientific execution."
-        ),
+        description="Local request editing and evidence review. No compiler or "
+        "scientific execution.",
     )
     app.state.workspace = workspace
     app.state.repository = repository
     app.state.imports = imports
     app.state.exports = exports
-    configured = origins or {
-        "http://127.0.0.1:8000",
-        "http://localhost:8000",
-        "http://127.0.0.1:5173",
-        "http://localhost:5173",
-    }
-    app.add_middleware(LocalBoundary, origins=configured)
+    app.add_middleware(LocalBoundary, origins=origins or DEFAULT_ORIGINS)
 
+    # -----------------------------------------------------------------------
+    # Errors
+    # -----------------------------------------------------------------------
     @app.exception_handler(DomainError)
     async def domain_error(_request: Request, error: DomainError) -> JSONResponse:
         return error_response(error)
@@ -190,15 +292,17 @@ def create_app(
     async def invalid_request(
         _request: Request, error: RequestValidationError
     ) -> JSONResponse:
-        locations = [
-            "/" + "/".join(str(part) for part in item["loc"] if part != "body")
-            for item in error.errors()
-        ]
+        # Point to the first wrong field, without the "body" prefix
+        location = None
+        for item in error.errors():
+            parts = [str(part) for part in item["loc"] if part != "body"]
+            location = "/" + "/".join(parts)
+            break
         return error_response(
             DomainError(
                 "SCHEMA_INVALID",
                 "Request fields are missing, unknown or have invalid types.",
-                locations[0] if locations else None,
+                location,
             )
         )
 
@@ -212,29 +316,31 @@ def create_app(
 
     @app.exception_handler(Exception)
     async def unexpected(_request: Request, error: Exception) -> JSONResponse:
+        # Only the type is logged, the message could contain study data
         LOG.error("Unexpected local application failure: %s", type(error).__name__)
         return error_response(
             DomainError(
                 "INTERNAL_ERROR",
-                (
-                    "The operation could not complete. Retain your work and "
-                    "inspect local service logs."
-                ),
+                "The operation could not complete. Retain your work and "
+                "inspect local service logs.",
             )
         )
 
+    # -----------------------------------------------------------------------
+    # Catalogue and saved studies
+    # -----------------------------------------------------------------------
     @app.get("/api/v1/catalogue")
     def get_catalogue() -> dict[str, Any]:
         return {
             **catalogue.model_dump(mode="json"),
             "format_versions": ["1.0"],
             "limits": {
-                "import_bytes": 1048576,
-                "targets": 50,
-                "bundles": 10,
-                "collections": 20,
-                "memberships": 1000,
-                "revisions": 200,
+                "import_bytes": MAX_FILE,
+                "targets": MAX_TARGETS,
+                "bundles": MAX_BUNDLES,
+                "collections": MAX_COLLECTIONS,
+                "memberships": MAX_MEMBERSHIPS,
+                "revisions": MAX_REVISIONS,
             },
         }
 
@@ -242,6 +348,9 @@ def create_app(
     def studies() -> dict[str, Any]:
         return {"studies": [item.model_dump() for item in repository.list()]}
 
+    # -----------------------------------------------------------------------
+    # Workspaces
+    # -----------------------------------------------------------------------
     @app.post("/api/v1/workspaces", status_code=201)
     def create(payload: CreateInput) -> dict[str, Any]:
         with workspace.lock:
@@ -268,30 +377,23 @@ def create_app(
     @app.post("/api/v1/workspaces/{workspace_id}/commands")
     def command(workspace_id: str, payload: CommandInput) -> dict[str, Any]:
         with workspace.lock:
+            # Attaching needs the preview, so it goes to imports
             operation = payload.command
             if isinstance(operation, AttachEvidence):
                 session = imports.attach(
-                    workspace_id,
-                    payload.draft_buffers,
-                    operation.preview_id,
+                    workspace_id, payload.draft_buffers, operation.preview_id
                 )
             else:
                 session = workspace.command(
-                    workspace_id,
-                    payload.draft_buffers,
-                    operation,
+                    workspace_id, payload.draft_buffers, operation
                 )
             return workspace.view(session)
 
     @app.post("/api/v1/workspaces/{workspace_id}/save")
     def save(workspace_id: str, payload: SaveInput) -> dict[str, Any]:
         with workspace.lock:
-            return workspace.view(
-                workspace.save(
-                    workspace_id,
-                    payload.draft_buffers,
-                )
-            )
+            session = workspace.save(workspace_id, payload.draft_buffers)
+            return workspace.view(session)
 
     @app.post("/api/v1/workspaces/{workspace_id}/undo")
     def undo(workspace_id: str) -> dict[str, Any]:
@@ -304,6 +406,9 @@ def create_app(
             workspace_id, payload.revision_id, payload.target_draft
         )
 
+    # -----------------------------------------------------------------------
+    # Imports and exports
+    # -----------------------------------------------------------------------
     @app.post("/api/v1/imports", status_code=201)
     def preview(payload: ImportInput) -> dict[str, Any]:
         if isinstance(payload, EvidenceImport):
@@ -332,35 +437,32 @@ def create_app(
     @app.get("/api/v1/exports/{export_id}/file")
     def download(export_id: str) -> Response:
         exported = exports.download(export_id)
+        disposition = f'attachment; filename="{exported.filename}"'
         return Response(
             exported.raw,
             media_type="application/json",
-            headers={
-                "Content-Disposition": f'attachment; filename="{exported.filename}"'
-            },
+            headers={"Content-Disposition": disposition},
         )
 
     @app.get("/api/v1/examples/{name}")
     def example(name: str) -> Response:
-        allowed = {
-            "request-valid.json",
-            "evidence-valid.json",
-            "evidence-context-mismatch.json",
-            "evidence-empty.json",
-        }
-        if name not in allowed:
+        # Only the known files, the name never becomes a free path
+        if name not in EXAMPLES:
             raise DomainError("NOT_FOUND", "Example file was not found.")
         return Response(
-            resource_path(f"examples/{name}").read_bytes(),
+            resource_path("examples/" + name).read_bytes(),
             media_type="application/json",
             headers={"Content-Disposition": f'attachment; filename="{name}"'},
         )
 
-    directory = web_directory or Path(
-        os.environ.get(
-            "IRCOMP_GUI_WEB", str(Path(__file__).resolve().parents[3] / "web/dist")
-        )
-    )
+    # -----------------------------------------------------------------------
+    # Web client
+    # -----------------------------------------------------------------------
+    if web_directory is None:
+        default_web = REPOSITORY / "web/dist"
+        web_directory = Path(os.environ.get("IRCOMP_GUI_WEB", str(default_web)))
+    directory = web_directory
+
     if (directory / "assets").is_dir():
         app.mount("/assets", StaticFiles(directory=directory / "assets"), name="assets")
 

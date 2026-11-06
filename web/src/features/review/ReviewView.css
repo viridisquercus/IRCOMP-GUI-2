@@ -1,0 +1,121 @@
+/**
+ * @file ReviewView.css
+ * @brief Styles of 02 / Review - candidates, evidence and decisions
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
+
+/* Layout: candidates | evidence | decision */
+.review-grid {
+  display: grid;
+  grid-template-columns: 225px minmax(280px, 1fr) 345px;
+  gap: 18px;
+  align-items: start;
+}
+.evidence-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+/* Candidate list - rows go over the panel padding */
+.candidate-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: calc(100% + 16px);
+  margin: 0 -8px;
+  border: 0;
+  border-radius: 0;
+  padding: 17px 15px;
+  color: var(--ink);
+  background: white;
+  text-align: left;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-left: 3px solid transparent;
+  font-weight: 400;
+}
+.candidate-row:hover {
+  background: #f6f9f6;
+}
+.candidate-row.selected {
+  background: #edf5ef;
+  border-left-color: var(--teal);
+}
+.candidate-row strong {
+  font-size: 12px;
+  display: block;
+  overflow-wrap: anywhere;
+}
+.candidate-row small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* Metrics of the candidate */
+.metric {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 15px;
+  padding: 21px 0;
+  border-top: 1px solid var(--line);
+}
+.metric h3 {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.metric p {
+  font-size: 11px;
+  margin: 0;
+}
+.metric small {
+  color: var(--muted);
+  font-size: 10px;
+  grid-column: 1/-1;
+  margin-top: 10px;
+}
+.metric-value {
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--teal);
+}
+.metric-missing {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  padding-top: 5px;
+}
+
+/* Collections and decision */
+.manage-collections {
+  margin: 15px 0;
+}
+.manage-collections[open] summary {
+  margin-bottom: 16px;
+}
+.decision-panel form {
+  margin-top: 15px;
+}
+
+/* Narrow screens - the decision panel goes under the evidence */
+@media (max-width: 1200px) {
+  .review-grid {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+  .decision-panel {
+    grid-column: 1/-1;
+  }
+}
+@media (max-width: 760px) {
+  .review-grid {
+    grid-template-columns: 1fr;
+  }
+  .decision-panel {
+    grid-column: auto;
+  }
+}

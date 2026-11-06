@@ -1,6 +1,19 @@
-/*************************************************************************
- * Name: Lukas (Viridis) Dubsik
- *************************************************************************/
+/**
+ * @file review.cy.ts
+ * @brief Tests of evidence import, review decisions and review export
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
+
+/**
+ * AI DISCLAIMER
+ * 
+ * These tests were generated using AI to test the 
+ * application funcionalitya and refined afterwards
+ * to suit the requested needs of testing.
+ */
+
 import type { ExportPreview } from "../../src/shared/types";
 import {
   attachEvidence,

@@ -1,0 +1,91 @@
+/**
+ * @file ExportView.css
+ * @brief Styles of 03 / Export - export options and the frozen preview
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
+
+/* Layout: options | selected context */
+.export-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(250px, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+/* Request / review choice */
+.export-options {
+  display: grid;
+  gap: 12px;
+}
+.export-option {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 18px;
+  cursor: pointer;
+}
+.export-option.selected {
+  background: #f0f6f0;
+  border-color: #95b7a8;
+}
+.export-option input {
+  width: 15px;
+  height: 15px;
+  margin: 2px 0;
+  accent-color: var(--teal);
+  flex-shrink: 0;
+}
+.export-option small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+  font-weight: 400;
+  margin-top: 7px;
+}
+.export-option > .mono {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* Preview */
+.export-preview {
+  margin-top: 24px;
+}
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: #f5f8f3;
+  border: 1px solid var(--line);
+  padding: 20px;
+  border-radius: 6px;
+}
+.stat-grid strong {
+  display: block;
+  font-size: 25px;
+  font-weight: 500;
+  color: var(--teal);
+}
+.stat-grid span {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* Narrow screens */
+@media (max-width: 760px) {
+  .export-grid {
+    grid-template-columns: 1fr;
+  }
+  .stat-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .export-option {
+    flex-wrap: wrap;
+  }
+}

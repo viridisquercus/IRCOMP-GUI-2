@@ -49,10 +49,10 @@ docstring-code-format = true
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "N", "UP", "ANN", "B", "S", "PTH", "D", "RUF"]
-ignore = ["D107", "D203", "D213"]
+ignore = ["D107"]
 
 [tool.ruff.lint.pydocstyle]
-convention = "google"
+convention = "numpy"
 
 [tool.ruff.lint.isort]
 known-first-party = ["ircomp_gui"]
@@ -66,4 +66,3 @@ typeCheckingMode = "strict"
 enableTypeIgnoreComments = false
 reportUnnecessaryTypeIgnoreComment = "error"
 reportImportCycles = "error"
-reportUnusedCallResult = "error"
