@@ -3,7 +3,7 @@
 
 PYTHON ?= python3
 
-.PHONY: install install-dev build run check format test pack
+.PHONY: install install-dev build run contracts check format test test-contracts pack
 
 install:
 	$(PYTHON) -m venv .venv
@@ -20,7 +20,11 @@ build:
 run:
 	.venv/bin/ircomp-gui
 
+contracts:
+	PYTHONPATH=src .venv/bin/python scripts/generate_contracts.py
+
 check:
+	PYTHONPATH=src .venv/bin/python scripts/generate_contracts.py --check
 	.venv/bin/ruff check src
 	.venv/bin/ruff format --check src
 	.venv/bin/pyright
@@ -30,7 +34,11 @@ format:
 	.venv/bin/ruff format src
 	npm --prefix web run format
 
-test: build
+test-contracts:
+	PYTHONPATH=src .venv/bin/python -m unittest discover -s tests
+	npm --prefix web run test:contracts
+
+test: build test-contracts
 	npm --prefix web run test:e2e
 
 pack:

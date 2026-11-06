@@ -19,6 +19,7 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
 from ircomp_gui.domain.constants import (
+    MAX_BASE64,
     MAX_BUNDLES,
     MAX_CANDIDATES,
     MAX_COLLECTIONS,
@@ -55,7 +56,11 @@ class Value(BaseModel):
     """Base of all models, keeps the values typed and refuses unknown fields."""
 
     model_config = ConfigDict(
-        strict=True, extra="forbid", frozen=True, allow_inf_nan=False
+        strict=True,
+        extra="forbid",
+        frozen=True,
+        allow_inf_nan=False,
+        json_schema_serialization_defaults_required=True,
     )
 
 
@@ -309,14 +314,10 @@ class TargetDraft(Value):
     strand: Text
 
 
-class DecisionDraft(Value):
+class DecisionDraft(Membership):
     """Keep an unfinished decision separate from the accepted one."""
 
     collection_id: Id
-    candidate: CandidateKey
-    disposition: Disposition
-    rationale: Rationale
-    evidence_refs: Annotated[list[CandidateKey], Field(max_length=MAX_REFERENCES)]
 
 
 class DraftBuffers(Value):
@@ -326,7 +327,19 @@ class DraftBuffers(Value):
     decision: DecisionDraft | None = None
 
 
-class Study(Value):
+class StudyData(Value):
+    """Study fields shared by the database and browser responses."""
+
+    study_id: Id
+    request_id: Id
+    title: Label
+    active_revision_id: Id
+    revisions: Annotated[list[Revision], Field(min_length=1, max_length=MAX_REVISIONS)]
+    target_labels: dict[Id, Label]
+    draft_buffers: DraftBuffers
+
+
+class Study(StudyData):
     """Keep all the data belonging to one study.
 
     Attributes
@@ -349,12 +362,37 @@ class Study(Value):
         Unapplied editor text saved for recovery
     """
 
-    study_id: Id
-    request_id: Id
-    title: Label
-    active_revision_id: Id
-    revisions: Annotated[list[Revision], Field(min_length=1, max_length=MAX_REVISIONS)]
-    target_labels: dict[Id, Label]
     evidence: Annotated[list[EvidenceFile], Field(max_length=MAX_BUNDLES)]
     collections: Annotated[list[Collection], Field(max_length=MAX_COLLECTIONS)]
-    draft_buffers: DraftBuffers
+
+
+class ReviewSourceFile(Value):
+    """Original evidence bytes included in a review download."""
+
+    bundle_id: Id
+    sha256: Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
+    content_base64: Annotated[
+        str,
+        Field(
+            min_length=4,
+            max_length=MAX_BASE64,
+            pattern=r"^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+        ),
+    ]
+
+
+class ReviewPackage(Value):
+    """Saved request, review decisions and the original evidence files."""
+
+    kind: Literal["review"] = "review"
+    format_version: Literal["1.0"] = "1.0"
+    request: RequestSnapshot
+    source_saved_version: Annotated[int, Field(ge=1)]
+    collections: Annotated[
+        list[Collection], Field(min_length=1, max_length=MAX_COLLECTIONS)
+    ]
+    evidence_files: Annotated[
+        list[ReviewSourceFile], Field(min_length=1, max_length=MAX_BUNDLES)
+    ]
+    review_status: Literal["draft", "reviewed"]
+    unresolved_count: Annotated[int, Field(ge=0, le=MAX_MEMBERSHIPS + MAX_COLLECTIONS)]

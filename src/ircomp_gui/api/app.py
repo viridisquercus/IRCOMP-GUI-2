@@ -19,7 +19,6 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
-from typing import Any
 from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Request, Response
@@ -48,15 +47,19 @@ from ircomp_gui.api.requests import (
 from ircomp_gui.application.commands import AttachEvidence
 from ircomp_gui.application.export import ExportService
 from ircomp_gui.application.imports import ImportService
+from ircomp_gui.application.responses import (
+    CatalogueView,
+    ErrorDetail,
+    ErrorResponse,
+    ExportPreviewView,
+    ImportPreviewView,
+    StudyList,
+    ValidationView,
+    WorkspaceView,
+)
 from ircomp_gui.application.workspace import WorkspaceService
 from ircomp_gui.domain.constants import (
     MAX_BODY,
-    MAX_BUNDLES,
-    MAX_COLLECTIONS,
-    MAX_FILE,
-    MAX_MEMBERSHIPS,
-    MAX_REVISIONS,
-    MAX_TARGETS,
 )
 from ircomp_gui.domain.errors import DomainError
 from ircomp_gui.domain.serialization import parse_json
@@ -129,13 +132,11 @@ def error_response(error: DomainError) -> JSONResponse:
     """
     return JSONResponse(
         status_code=error_status(error.code),
-        content={
-            "error": {
-                "code": error.code,
-                "message": error.message,
-                "diagnostics": [item.model_dump() for item in error.diagnostics],
-            },
-        },
+        content=ErrorResponse(
+            error=ErrorDetail(
+                code=error.code, message=error.message, diagnostics=error.diagnostics
+            )
+        ).model_dump(mode="json"),
     )
 
 
@@ -272,6 +273,10 @@ def create_app(
     app = FastAPI(
         title="IRCOMP Study Workspace",
         version="0.1.0",
+        responses={
+            code: {"model": ErrorResponse}
+            for code in sorted(set(ERROR_STATUS.values()))
+        },
         description="Local editing of requests and review of evidence.",
     )
     app.state.workspace = workspace
@@ -327,29 +332,18 @@ def create_app(
     # Catalogue and saved studies
     # -----------------------------------------------------------------------
     @app.get("/api/v1/catalogue")
-    def get_catalogue() -> dict[str, Any]:
-        return {
-            **catalogue.model_dump(mode="json"),
-            "format_versions": ["1.0"],
-            "limits": {
-                "import_bytes": MAX_FILE,
-                "targets": MAX_TARGETS,
-                "bundles": MAX_BUNDLES,
-                "collections": MAX_COLLECTIONS,
-                "memberships": MAX_MEMBERSHIPS,
-                "revisions": MAX_REVISIONS,
-            },
-        }
+    def get_catalogue() -> CatalogueView:
+        return CatalogueView(**catalogue.model_dump())
 
     @app.get("/api/v1/studies")
-    def studies() -> dict[str, Any]:
-        return {"studies": [item.model_dump() for item in repository.list()]}
+    def studies() -> StudyList:
+        return StudyList(studies=repository.list())
 
     # -----------------------------------------------------------------------
     # Workspaces
     # -----------------------------------------------------------------------
     @app.post("/api/v1/workspaces", status_code=201)
-    def create(payload: CreateInput) -> dict[str, Any]:
+    def create(payload: CreateInput) -> WorkspaceView:
         with workspace.lock:
             if isinstance(payload, NewWorkspace):
                 session = workspace.create(payload.title)
@@ -362,7 +356,7 @@ def create_app(
             return workspace.view(session)
 
     @app.get("/api/v1/workspaces/{workspace_id}")
-    def get(workspace_id: str) -> dict[str, Any]:
+    def get(workspace_id: str) -> WorkspaceView:
         with workspace.lock:
             return workspace.view(workspace.get(workspace_id))
 
@@ -372,7 +366,7 @@ def create_app(
         return Response(status_code=204)
 
     @app.post("/api/v1/workspaces/{workspace_id}/commands")
-    def command(workspace_id: str, payload: CommandInput) -> dict[str, Any]:
+    def command(workspace_id: str, payload: CommandInput) -> WorkspaceView:
         with workspace.lock:
             # Attaching needs the preview, so it goes to imports
             operation = payload.command
@@ -387,18 +381,18 @@ def create_app(
             return workspace.view(session)
 
     @app.post("/api/v1/workspaces/{workspace_id}/save")
-    def save(workspace_id: str, payload: SaveInput) -> dict[str, Any]:
+    def save(workspace_id: str, payload: SaveInput) -> WorkspaceView:
         with workspace.lock:
             session = workspace.save(workspace_id, payload.draft_buffers)
             return workspace.view(session)
 
     @app.post("/api/v1/workspaces/{workspace_id}/undo")
-    def undo(workspace_id: str) -> dict[str, Any]:
+    def undo(workspace_id: str) -> WorkspaceView:
         with workspace.lock:
             return workspace.view(workspace.undo(workspace_id))
 
     @app.post("/api/v1/workspaces/{workspace_id}/validate")
-    def validate(workspace_id: str, payload: ValidateInput) -> dict[str, Any]:
+    def validate(workspace_id: str, payload: ValidateInput) -> ValidationView:
         return workspace.validate(
             workspace_id, payload.revision_id, payload.target_draft
         )
@@ -407,7 +401,7 @@ def create_app(
     # Imports and exports
     # -----------------------------------------------------------------------
     @app.post("/api/v1/imports", status_code=201)
-    def preview(payload: ImportInput) -> dict[str, Any]:
+    def preview(payload: ImportInput) -> ImportPreviewView:
         if isinstance(payload, EvidenceImport):
             return imports.preview(
                 payload.kind,
@@ -423,7 +417,7 @@ def create_app(
         return Response(status_code=204)
 
     @app.post("/api/v1/exports", status_code=201)
-    def export(payload: ExportInput) -> dict[str, Any]:
+    def export(payload: ExportInput) -> ExportPreviewView:
         return exports.prepare(
             payload.study_id,
             payload.revision_id,

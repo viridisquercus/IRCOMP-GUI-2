@@ -1,200 +1,315 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://viridisquercus.github.io/IRCOMP-GUI/contracts/exchange-1.0.schema.json",
-  "title": "IRCOMP-GUI local exchange 1.0",
-  "description": "Local GUI exchange; not the IRCOMP compiler contract. Semantic rules also apply.",
-  "oneOf": [
-    {
-      "$ref": "#/$defs/request"
-    },
-    {
-      "$ref": "#/$defs/evidence"
-    },
-    {
-      "$ref": "#/$defs/review"
-    }
-  ],
   "$defs": {
-    "target": {
-      "type": "object",
+    "Candidate": {
+      "additionalProperties": false,
+      "description": "Describe a candidate and keep the original record of its producer.\n\nAttributes\n----------\ncandidate_id : str\n    ID of the candidate, unique inside its bundle\ntarget_id : str\n    Target the candidate belongs to\nlabel : str\n    Name shown in the candidate list\nmetrics : list[Metric]\n    Scores supplied by the producer\nraw_record : dict\n    Untouched record as the producer wrote it",
       "properties": {
+        "candidate_id": {
+          "maxLength": 100,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Candidate Id",
+          "type": "string"
+        },
         "target_id": {
-          "type": "string",
-          "format": "uuid"
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Target Id",
+          "type": "string"
         },
-        "contig": {
-          "type": "string",
-          "minLength": 1,
+        "label": {
           "maxLength": 200,
-          "pattern": "\\S"
-        },
-        "start": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
-        },
-        "end": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
-        },
-        "strand": {
-          "enum": [
-            "+",
-            "-",
-            "."
-          ]
-        }
-      },
-      "required": [
-        "target_id",
-        "contig",
-        "start",
-        "end",
-        "strand"
-      ],
-      "additionalProperties": false
-    },
-    "revision": {
-      "type": "object",
-      "properties": {
-        "revision_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "reference_id": {
-          "type": "string",
           "minLength": 1,
-          "maxLength": 200,
-          "pattern": "\\S"
+          "pattern": "\\S",
+          "title": "Label",
+          "type": "string"
         },
-        "profile_id": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 200,
-          "pattern": "\\S"
-        },
-        "coordinate_system": {
-          "const": "0-based-half-open"
-        },
-        "targets": {
-          "type": "array",
+        "metrics": {
           "items": {
-            "$ref": "#/$defs/target"
+            "$ref": "#/$defs/Metric"
           },
-          "minItems": 0,
-          "maxItems": 50
+          "maxItems": 20,
+          "title": "Metrics",
+          "type": "array"
+        },
+        "raw_record": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Raw Record",
+          "type": "object"
         }
       },
       "required": [
-        "revision_id",
-        "reference_id",
-        "profile_id",
-        "coordinate_system",
-        "targets"
+        "candidate_id",
+        "target_id",
+        "label",
+        "metrics",
+        "raw_record"
       ],
-      "additionalProperties": false
+      "title": "Candidate",
+      "type": "object"
     },
-    "request": {
-      "type": "object",
+    "CandidateKey": {
+      "additionalProperties": false,
+      "description": "Identify a candidate by the bundle ID and candidate ID.",
+      "properties": {
+        "bundle_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Bundle Id",
+          "type": "string"
+        },
+        "candidate_id": {
+          "maxLength": 100,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$",
+          "title": "Candidate Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "bundle_id",
+        "candidate_id"
+      ],
+      "title": "CandidateKey",
+      "type": "object"
+    },
+    "Collection": {
+      "additionalProperties": false,
+      "description": "Group the decisions belonging to one request revision.",
+      "properties": {
+        "collection_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Collection Id",
+          "type": "string"
+        },
+        "revision_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Revision Id",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Name",
+          "type": "string"
+        },
+        "memberships": {
+          "items": {
+            "$ref": "#/$defs/Membership"
+          },
+          "maxItems": 1000,
+          "title": "Memberships",
+          "type": "array"
+        }
+      },
+      "required": [
+        "collection_id",
+        "revision_id",
+        "name",
+        "memberships"
+      ],
+      "title": "Collection",
+      "type": "object"
+    },
+    "Dependency": {
+      "additionalProperties": false,
+      "description": "Record an external file or resource, it is never downloaded.",
+      "properties": {
+        "uri": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Uri",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "uri",
+        "description"
+      ],
+      "title": "Dependency",
+      "type": "object"
+    },
+    "EvidenceBundle": {
+      "additionalProperties": false,
+      "description": "Group candidates with the request context their producer used.\n\nAttributes\n----------\nbundle_id : str\n    UUID of the bundle\nrequest_id : str\n    Request the bundle was produced for\ncontext : Revision\n    Exact revision the producer received\ncategory : str\n    synthetic or computational_prediction\nsource : Source\n    Who produced the bundle\ncandidates : list[Candidate]\n    Candidates of the bundle\ndependencies : list[Dependency]\n    External resources the producer refers to",
       "properties": {
         "kind": {
-          "const": "request"
+          "const": "evidence",
+          "default": "evidence",
+          "title": "Kind",
+          "type": "string"
         },
         "format_version": {
-          "const": "1.0"
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Format Version",
+          "type": "string"
         },
-        "study_id": {
-          "type": "string",
-          "format": "uuid"
+        "bundle_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Bundle Id",
+          "type": "string"
         },
         "request_id": {
-          "type": "string",
-          "format": "uuid"
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Request Id",
+          "type": "string"
         },
-        "title": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 200,
-          "pattern": "\\S"
+        "context": {
+          "$ref": "#/$defs/Revision"
         },
-        "revision": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/revision"
-            },
-            {
-              "properties": {
-                "targets": {
-                  "minItems": 1
-                }
-              }
-            }
-          ]
+        "category": {
+          "enum": [
+            "synthetic",
+            "computational_prediction"
+          ],
+          "title": "Category",
+          "type": "string"
         },
-        "target_labels": {
-          "type": "object",
-          "propertyNames": {
-            "type": "string",
-            "format": "uuid"
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/Candidate"
           },
-          "additionalProperties": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 200,
-            "pattern": "\\S"
+          "maxItems": 200,
+          "title": "Candidates",
+          "type": "array"
+        },
+        "dependencies": {
+          "items": {
+            "$ref": "#/$defs/Dependency"
           },
-          "maxProperties": 50
+          "maxItems": 100,
+          "title": "Dependencies",
+          "type": "array"
         }
       },
       "required": [
         "kind",
         "format_version",
-        "study_id",
+        "bundle_id",
         "request_id",
-        "title",
-        "revision",
-        "target_labels"
+        "context",
+        "category",
+        "source",
+        "candidates",
+        "dependencies"
       ],
-      "additionalProperties": false
+      "title": "EvidenceBundle",
+      "type": "object"
     },
-    "metric": {
-      "type": "object",
+    "JsonValue": {},
+    "Membership": {
+      "additionalProperties": false,
+      "description": "Store the decision about one candidate in one collection.\n\nAttributes\n----------\ncandidate : CandidateKey\n    The candidate the decision is about\ndisposition : str\n    The decision itself\nrationale : str\n    Why the decision was made\nevidence_refs : list[CandidateKey]\n    Other candidates supporting the decision",
+      "properties": {
+        "candidate": {
+          "$ref": "#/$defs/CandidateKey"
+        },
+        "disposition": {
+          "enum": [
+            "undecided",
+            "include_for_review",
+            "exclude",
+            "needs_clarification"
+          ],
+          "title": "Disposition",
+          "type": "string"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/CandidateKey"
+          },
+          "maxItems": 100,
+          "title": "Evidence Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "candidate",
+        "disposition",
+        "rationale",
+        "evidence_refs"
+      ],
+      "title": "Membership",
+      "type": "object"
+    },
+    "Metric": {
+      "additionalProperties": false,
+      "description": "Store one score together with its meaning and availability.\n\nZero and a missing value are different things here, the availability\nsays which one it is.",
       "properties": {
         "name": {
-          "type": "string",
-          "minLength": 1,
           "maxLength": 200,
-          "pattern": "\\S"
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Name",
+          "type": "string"
         },
         "model": {
-          "type": [
-            "string",
-            "null"
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
           ],
-          "maxLength": 200
+          "title": "Model"
         },
         "unit": {
-          "type": [
-            "string",
-            "null"
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
           ],
-          "maxLength": 200
+          "title": "Unit"
         },
         "scale": {
-          "type": [
-            "string",
-            "null"
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
           ],
-          "maxLength": 200
+          "title": "Scale"
         },
         "direction": {
-          "enum": [
-            "higher",
-            "lower",
-            "not_ordered",
-            null
-          ]
+          "anyOf": [
+            {
+              "enum": [
+                "higher",
+                "lower",
+                "not_ordered"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Direction"
         },
         "availability": {
           "enum": [
@@ -203,13 +318,23 @@
             "unsupported",
             "failed",
             "unknown"
-          ]
+          ],
+          "title": "Availability",
+          "type": "string"
         },
         "value": {
-          "type": [
-            "number",
-            "null"
-          ]
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
         }
       },
       "required": [
@@ -221,7 +346,8 @@
         "availability",
         "value"
       ],
-      "additionalProperties": false,
+      "title": "Metric",
+      "type": "object",
       "allOf": [
         {
           "if": {
@@ -248,305 +374,134 @@
         }
       ]
     },
-    "candidate_key": {
-      "type": "object",
-      "properties": {
-        "bundle_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "candidate_id": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 100,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
-        }
-      },
-      "required": [
-        "bundle_id",
-        "candidate_id"
-      ],
-      "additionalProperties": false
-    },
-    "candidate": {
-      "type": "object",
-      "properties": {
-        "candidate_id": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 100,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
-        },
-        "target_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "label": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 200,
-          "pattern": "\\S"
-        },
-        "metrics": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/metric"
-          },
-          "minItems": 0,
-          "maxItems": 20
-        },
-        "raw_record": {
-          "type": "object"
-        }
-      },
-      "required": [
-        "candidate_id",
-        "target_id",
-        "label",
-        "metrics",
-        "raw_record"
-      ],
-      "additionalProperties": false
-    },
-    "evidence": {
-      "type": "object",
+    "RequestSnapshot": {
+      "additionalProperties": false,
+      "description": "Store one request revision in the local exchange format.\n\nAttributes\n----------\nstudy_id, request_id : str\n    Identity of the study the request comes from\ntitle : str\n    Title of the study\nrevision : Revision\n    The exported revision\ntarget_labels : dict[str, str]\n    Labels of the targets of the revision, keyed by target ID",
       "properties": {
         "kind": {
-          "const": "evidence"
+          "const": "request",
+          "default": "request",
+          "title": "Kind",
+          "type": "string"
         },
         "format_version": {
-          "const": "1.0"
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Format Version",
+          "type": "string"
         },
-        "bundle_id": {
-          "type": "string",
-          "format": "uuid"
+        "study_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Study Id",
+          "type": "string"
         },
         "request_id": {
-          "type": "string",
-          "format": "uuid"
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Request Id",
+          "type": "string"
         },
-        "context": {
-          "$ref": "#/$defs/revision"
+        "title": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Title",
+          "type": "string"
         },
-        "category": {
-          "enum": [
-            "synthetic",
-            "computational_prediction"
+        "revision": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Revision"
+            },
+            {
+              "properties": {
+                "targets": {
+                  "minItems": 1
+                }
+              }
+            }
           ]
         },
-        "source": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string",
-              "minLength": 1,
+        "target_labels": {
+          "patternProperties": {
+            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$": {
               "maxLength": 200,
-              "pattern": "\\S"
-            },
-            "version": {
-              "type": "string",
               "minLength": 1,
-              "maxLength": 200,
-              "pattern": "\\S"
-            },
-            "uri": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 2000
+              "pattern": "\\S",
+              "type": "string"
             }
           },
-          "required": [
-            "name",
-            "version",
-            "uri"
-          ],
-          "additionalProperties": false
-        },
-        "candidates": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/candidate"
-          },
-          "minItems": 0,
-          "maxItems": 200
-        },
-        "dependencies": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "uri": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 2000
-              },
-              "description": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 1000
-              }
-            },
-            "required": [
-              "uri",
-              "description"
-            ],
-            "additionalProperties": false
-          },
-          "minItems": 0,
-          "maxItems": 100
+          "title": "Target Labels",
+          "type": "object",
+          "maxProperties": 50
         }
       },
       "required": [
         "kind",
         "format_version",
-        "bundle_id",
+        "study_id",
         "request_id",
-        "context",
-        "category",
-        "source",
-        "candidates",
-        "dependencies"
+        "title",
+        "revision",
+        "target_labels"
       ],
-      "additionalProperties": false
+      "title": "RequestSnapshot",
+      "type": "object"
     },
-    "membership": {
-      "type": "object",
-      "properties": {
-        "candidate": {
-          "$ref": "#/$defs/candidate_key"
-        },
-        "disposition": {
-          "enum": [
-            "undecided",
-            "include_for_review",
-            "exclude",
-            "needs_clarification"
-          ]
-        },
-        "rationale": {
-          "type": "string",
-          "maxLength": 4000
-        },
-        "evidence_refs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/candidate_key"
-          },
-          "minItems": 0,
-          "maxItems": 100
-        }
-      },
-      "required": [
-        "candidate",
-        "disposition",
-        "rationale",
-        "evidence_refs"
-      ],
-      "additionalProperties": false
-    },
-    "collection": {
-      "type": "object",
-      "properties": {
-        "collection_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "revision_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 200,
-          "pattern": "\\S"
-        },
-        "memberships": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/membership"
-          },
-          "minItems": 0,
-          "maxItems": 1000
-        }
-      },
-      "required": [
-        "collection_id",
-        "revision_id",
-        "name",
-        "memberships"
-      ],
-      "additionalProperties": false
-    },
-    "raw_file": {
-      "type": "object",
-      "properties": {
-        "bundle_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "sha256": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
-        },
-        "content_base64": {
-          "type": "string",
-          "minLength": 4,
-          "maxLength": 1398104,
-          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
-        }
-      },
-      "required": [
-        "bundle_id",
-        "sha256",
-        "content_base64"
-      ],
-      "additionalProperties": false
-    },
-    "review": {
-      "type": "object",
+    "ReviewPackage": {
+      "additionalProperties": false,
+      "description": "Saved request, review decisions and the original evidence files.",
       "properties": {
         "kind": {
-          "const": "review"
+          "const": "review",
+          "default": "review",
+          "title": "Kind",
+          "type": "string"
         },
         "format_version": {
-          "const": "1.0"
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Format Version",
+          "type": "string"
         },
         "request": {
-          "$ref": "#/$defs/request"
+          "$ref": "#/$defs/RequestSnapshot"
         },
         "source_saved_version": {
-          "type": "integer",
-          "minimum": 1
+          "minimum": 1,
+          "title": "Source Saved Version",
+          "type": "integer"
         },
         "collections": {
-          "type": "array",
           "items": {
-            "$ref": "#/$defs/collection"
+            "$ref": "#/$defs/Collection"
           },
+          "maxItems": 20,
           "minItems": 1,
-          "maxItems": 20
+          "title": "Collections",
+          "type": "array"
         },
         "evidence_files": {
-          "type": "array",
           "items": {
-            "$ref": "#/$defs/raw_file"
+            "$ref": "#/$defs/ReviewSourceFile"
           },
+          "maxItems": 10,
           "minItems": 1,
-          "maxItems": 10
+          "title": "Evidence Files",
+          "type": "array"
         },
         "review_status": {
           "enum": [
             "draft",
             "reviewed"
-          ]
+          ],
+          "title": "Review Status",
+          "type": "string"
         },
         "unresolved_count": {
-          "type": "integer",
+          "maximum": 1020,
           "minimum": 0,
-          "maximum": 1020
+          "title": "Unresolved Count",
+          "type": "integer"
         }
       },
       "required": [
@@ -559,7 +514,8 @@
         "review_status",
         "unresolved_count"
       ],
-      "additionalProperties": false,
+      "title": "ReviewPackage",
+      "type": "object",
       "allOf": [
         {
           "if": {
@@ -585,6 +541,186 @@
           }
         }
       ]
+    },
+    "ReviewSourceFile": {
+      "additionalProperties": false,
+      "description": "Original evidence bytes included in a review download.",
+      "properties": {
+        "bundle_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Bundle Id",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "content_base64": {
+          "maxLength": 1398104,
+          "minLength": 4,
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+          "title": "Content Base64",
+          "type": "string"
+        }
+      },
+      "required": [
+        "bundle_id",
+        "sha256",
+        "content_base64"
+      ],
+      "title": "ReviewSourceFile",
+      "type": "object"
+    },
+    "Revision": {
+      "additionalProperties": false,
+      "description": "Keep the reference and targets of one request revision.\n\nAttributes\n----------\nrevision_id : str\n    UUID of the revision\nreference_id : str\n    Catalogue ID of the reference\nprofile_id : str\n    Catalogue ID of the analysis profile\ncoordinate_system : str\n    Always 0-based-half-open\ntargets : list[Target]\n    Accepted targets of this revision",
+      "properties": {
+        "revision_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Revision Id",
+          "type": "string"
+        },
+        "reference_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Reference Id",
+          "type": "string"
+        },
+        "profile_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "coordinate_system": {
+          "const": "0-based-half-open",
+          "default": "0-based-half-open",
+          "title": "Coordinate System",
+          "type": "string"
+        },
+        "targets": {
+          "items": {
+            "$ref": "#/$defs/Target"
+          },
+          "maxItems": 50,
+          "title": "Targets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "revision_id",
+        "reference_id",
+        "profile_id",
+        "coordinate_system",
+        "targets"
+      ],
+      "title": "Revision",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "description": "Describe the producer declared in the evidence file.",
+      "properties": {
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Version",
+          "type": "string"
+        },
+        "uri": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Uri"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "uri"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "Target": {
+      "additionalProperties": false,
+      "description": "Store one target interval on an exact contig accession.\n\nAttributes\n----------\ntarget_id : str\n    UUID of the target, stays the same through revisions\ncontig : str\n    Accession of the contig (for example NC_000001.11)\nstart : int\n    First base of the interval, 0-based\nend : int\n    End of the interval, exclusive\nstrand : str\n    +, - or . when not specified",
+      "properties": {
+        "target_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "title": "Target Id",
+          "type": "string"
+        },
+        "contig": {
+          "maxLength": 200,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Contig",
+          "type": "string"
+        },
+        "start": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "End",
+          "type": "integer"
+        },
+        "strand": {
+          "enum": [
+            "+",
+            "-",
+            "."
+          ],
+          "title": "Strand",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_id",
+        "contig",
+        "start",
+        "end",
+        "strand"
+      ],
+      "title": "Target",
+      "type": "object"
     }
-  }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/$defs/RequestSnapshot"
+    },
+    {
+      "$ref": "#/$defs/EvidenceBundle"
+    },
+    {
+      "$ref": "#/$defs/ReviewPackage"
+    }
+  ],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://viridisquercus.github.io/IRCOMP-GUI/contracts/exchange-1.0.schema.json",
+  "title": "IRCOMP-GUI local exchange 1.0",
+  "description": "Generated from the Python models. Domain rules also apply."
 }

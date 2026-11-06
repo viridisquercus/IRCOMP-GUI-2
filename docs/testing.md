@@ -50,3 +50,16 @@ There are no automatic retries and no fixed waits, the tests always wait for a r
 `make check` type-checks the test files, the Cypress configuration and the runner too. The last run passed all 11 scenarios (6.11.2026, Node 20.20.2, Cypress 15.21.1, Electron on Linux).
 
 These tests only check that the features work and recover from errors. They don't test load, the biology, or whether the interface is easy to use - that would need real users.
+
+## Data definitions and API responses
+
+Run `make test-contracts` for the focused Python and client checks. The Python
+suite calls the ASGI routes in process, with synchronous handlers run inline.
+It checks response-model enforcement, the import/save/export path, source bytes,
+published limits and exchange-file constraints. It does not test network or
+worker-thread scheduling.
+
+The client suite compiles the HTTP helper and generated definitions, then checks
+valid responses, missing nested fields, invalid dictionary values, malformed
+JSON and application errors. `make check` also regenerates the definitions in
+check mode, so stale generated files fail the check.

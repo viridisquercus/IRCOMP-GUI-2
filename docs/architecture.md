@@ -76,3 +76,22 @@ Errors look like `{error: {code, message, diagnostics}}`. A diagnostic can point
 ## Connection to IRCOMP
 
 The application works without IRCOMP. Its JSON schema is in `contracts`, the future mapping to the compiler and the F01-F10 checks are in the [integration notes](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897). IRCOMP will own the specification language, goals, constraints, cartridge rules, the compiler and running the analysis. The GUI will only edit the supported input and show the output. Whatever the GUI can't represent has to be reported, not silently dropped.
+
+## Shared data definitions
+
+Python models define the exchange files and API responses. `make contracts`
+regenerates `contracts/exchange.schema.json`, browser types, response schemas and
+limit constants. These generated files are committed so that building the client
+does not require Python. Edit the Python definitions, then regenerate them;
+`make check` reports stale output.
+
+Application services return the models in `application/responses.py`. FastAPI
+uses these return annotations to validate responses and describe them in OpenAPI.
+The browser checks response data against the generated schemas before updating
+its state. The response checker covers the schema keywords emitted by these
+models; generation fails if a new validation keyword needs browser support.
+
+`StudyView` deliberately omits original evidence bytes. Collection views include
+the unresolved count calculated by the Python review rules. The browser only
+adds those counts for a selection. Immediate interval checks remain in the
+browser for feedback while typing; the domain checks remain authoritative.

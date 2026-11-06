@@ -19,7 +19,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from threading import RLock
-from typing import Any
 from uuid import uuid4
 
 from ircomp_gui.application.commands import (
@@ -33,6 +32,14 @@ from ircomp_gui.application.commands import (
 )
 from ircomp_gui.application.ports import Repository
 from ircomp_gui.application.prepare import PrepareService
+from ircomp_gui.application.responses import (
+    CheckResult,
+    CollectionView,
+    EvidenceSummary,
+    StudyView,
+    ValidationView,
+    WorkspaceView,
+)
 from ircomp_gui.application.review import ReviewService
 from ircomp_gui.domain.catalogue import Catalogue
 from ircomp_gui.domain.constants import (
@@ -57,6 +64,7 @@ from ircomp_gui.domain.rules import (
     parse_target,
     request_diagnostics,
     revision_by_id,
+    unresolved,
     validate_revision,
     validate_study,
 )
@@ -201,34 +209,37 @@ class WorkspaceService:
             )
         return session
 
-    def view(self, session: Session) -> dict[str, Any]:
-        """Prepare the workspace data sent back to the web client.
-
-        Parameters
-        ----------
-        session : Session
-            Session to describe
-
-        Returns
-        -------
-        dict
-            JSON ready data, the evidence bytes are left out
-        """
-        # The client never needs the original bytes, they can be big
-        study = session.study.model_dump(
-            mode="json", exclude={"evidence": {"__all__": {"content_base64"}}}
+    def view(self, session: Session) -> WorkspaceView:
+        """Return study data without sending the original evidence files."""
+        study = session.study
+        return WorkspaceView(
+            workspace_id=session.workspace_id,
+            base_saved_version=session.base_saved_version,
+            dirty=study != session.saved,
+            can_undo=session.previous is not None,
+            study=StudyView(
+                study_id=study.study_id,
+                request_id=study.request_id,
+                title=study.title,
+                active_revision_id=study.active_revision_id,
+                revisions=study.revisions,
+                target_labels=study.target_labels,
+                evidence=[
+                    EvidenceSummary(bundle=item.bundle, sha256=item.sha256)
+                    for item in study.evidence
+                ],
+                collections=[
+                    CollectionView(
+                        **item.model_dump(), unresolved_count=unresolved([item])
+                    )
+                    for item in study.collections
+                ],
+                draft_buffers=study.draft_buffers,
+            ),
+            diagnostics=request_diagnostics(
+                study, active_revision(study), self.catalogue
+            ),
         )
-        diagnostics = request_diagnostics(
-            session.study, active_revision(session.study), self.catalogue
-        )
-        return {
-            "workspace_id": session.workspace_id,
-            "base_saved_version": session.base_saved_version,
-            "dirty": session.study != session.saved,
-            "can_undo": session.previous is not None,
-            "study": study,
-            "diagnostics": [item.model_dump() for item in diagnostics],
-        }
 
     def _register(self, study: Study, saved_version: int = 0) -> Session:
         validate_study(study, self.catalogue)
@@ -512,7 +523,7 @@ class WorkspaceService:
         workspace_id: str,
         revision_id: str,
         target_draft: TargetDraft | None = None,
-    ) -> dict[str, Any]:
+    ) -> ValidationView:
         """Check the request locally and list the checks that are not done.
 
         Parameters
@@ -526,7 +537,7 @@ class WorkspaceService:
 
         Returns
         -------
-        dict
+        ValidationView
             Result of the checks for the client
         """
         with self.lock:
@@ -540,25 +551,23 @@ class WorkspaceService:
 
             # The one check done here, then the ones which are not
             checks = [
-                {
-                    "name": "Request structure and contig lengths",
-                    "status": "failed" if diagnostics else "passed",
-                    "message": "Only checked locally, IRCOMP may still refuse it.",
-                }
+                CheckResult(
+                    name="Request structure and contig lengths",
+                    status="failed" if diagnostics else "passed",
+                    message="Only checked locally, IRCOMP may still refuse it.",
+                )
             ]
             for name in NOT_PERFORMED:
                 checks.append(
-                    {
-                        "name": name,
-                        "status": "not_performed",
-                        "message": "Not done here.",
-                    }
+                    CheckResult(
+                        name=name, status="not_performed", message="Not done here."
+                    )
                 )
 
-            return {
-                "revision_id": revision_id,
-                "export_ready": not diagnostics,
-                "checks": checks,
-                "diagnostics": [item.model_dump() for item in diagnostics],
-                "draft_diagnostics": [item.model_dump() for item in draft_diagnostics],
-            }
+            return ValidationView(
+                revision_id=revision_id,
+                export_ready=not diagnostics,
+                checks=checks,
+                diagnostics=diagnostics,
+                draft_diagnostics=draft_diagnostics,
+            )
