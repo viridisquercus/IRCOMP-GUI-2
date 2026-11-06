@@ -25,10 +25,10 @@ IRCOMP-GUI is a local application for preparing CRISPR analysis requests and for
 
 The application has three views: **Prepare**, **Review** and **Export**. In Prepare you choose the reference and set the target intervals. In Review you import the evidence (candidates found by some tool), put candidates into collections and write down your decision about each of them. Export then writes either the request or the review package from the saved study.
 
-To be clear about it from the start - this application doesn't compute anything. There is no CRISPR search, no off-target scoring, nothing like that. It only prepares the input for IRCOMP and shows what comes out.
+To be clear about it from the start - this application doesn't compute anything - it is just stuble for now. There is no CRISPR search, no off-target scoring, nothing like that. It only prepares the input for IRCOMP and shows what comes out.
 
 ## Installation and execution
-Python 3.12 or newer and Node 20.19 or newer are needed. I've tested it with Python 3.14.6, Node 20.20.2 and npm 10.8.2 on Linux, other versions and systems weren't tried.
+Python 3.12 or newer and Node 20.19 or newer are needed. I've tested it with Python 3.14.6, Node 20.20.2 and npm 10.8.2 on Ubuntu 26.04, other versions and systems weren't tried.
 
 From the root of the repository run:
 
@@ -89,7 +89,7 @@ The exchange schema and browser data types are generated from the Python definit
 More is written in [Architecture](docs/architecture.md) (classes and API), [File formats](contracts/README.md) (the JSON exchange) and [Design](docs/design/README.md) (wireframes). The plans for connecting it to IRCOMP are in the [IRCOMP integration notes](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897).
 
 ## Code checks
-The application itself is small, but I kept the checks strict, it caught a lot of mistakes early. To install and run them:
+The application itself is small, but I kept the checks strict (because I love strict typing and checking), it caught a lot of mistakes early. To install and run them:
 
 ```sh
 make install-dev
@@ -117,5 +117,4 @@ The tests go through editing, recovery of unapplied edits, Undo, imports, decisi
 ## Libraries and sources
 The application uses FastAPI, Pydantic, Uvicorn, jsonschema, React and Vite, Hatchling and editables are used for installing the Python package. All of them keep their own licences. The chromosome lengths in the catalogue come from the NCBI assembly report, which is kept in `contracts/references` together with its checksum.
 
-Code and documentation were developed with substantial AI assistance, including
-core functionality. The [contribution record](ai-audit.md) describes its scope.
+The [contribution record](ai-audit.md) describes scope of AI use.
