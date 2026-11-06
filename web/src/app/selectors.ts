@@ -88,29 +88,14 @@ export function selectedCollection(state: State): Collection | undefined {
 /**
  * @brief Count the decisions which still need a disposition or a reason
  *
- * Must give the same result as unresolved() in domain/rules.py.
+ * The service calculates each count with unresolved() in domain/rules.py.
  *
  * @param items Collections to count in
  * @return Number of unfinished items
  */
 export function unresolvedCount(items: Collection[]): number {
   let count = 0;
-  for (const collection of items) {
-    // An empty collection also means unfinished review work
-    if (collection.memberships.length === 0) {
-      count += 1;
-      continue;
-    }
-    for (const member of collection.memberships) {
-      if (
-        member.disposition === "undecided" ||
-        member.disposition === "needs_clarification" ||
-        !member.rationale.trim()
-      ) {
-        count += 1;
-      }
-    }
-  }
+  for (const collection of items) count += collection.unresolved_count;
   return count;
 }
 

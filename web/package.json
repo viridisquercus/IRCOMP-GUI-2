@@ -25,7 +25,8 @@
     "format:check": "prettier --check src cypress scripts *.ts *.json index.html",
     "check": "npm run typecheck && npm run format:check",
     "test:e2e": "node scripts/test.mjs",
-    "test:e2e:open": "node scripts/test.mjs --open"
+    "test:e2e:open": "node scripts/test.mjs --open",
+    "test:contracts": "node --test scripts/contracts.test.mjs"
   },
   "engines": {
     "node": ">=20.19.0"

@@ -1,0 +1,20 @@
+// Generated from ircomp_gui.domain.constants.
+export const MAX_BASE64 = 1398104;
+export const MAX_BODY = 2097152;
+export const MAX_BUNDLES = 10;
+export const MAX_CANDIDATES = 200;
+export const MAX_COLLECTIONS = 20;
+export const MAX_DEPENDENCIES = 100;
+export const MAX_DEPTH = 32;
+export const MAX_DOCUMENT = 20971520;
+export const MAX_EXPORTS = 5;
+export const MAX_FILE = 1048576;
+export const MAX_LABEL = 200;
+export const MAX_MEMBERSHIPS = 1000;
+export const MAX_METRICS = 20;
+export const MAX_PREVIEWS = 5;
+export const MAX_RATIONALE = 4000;
+export const MAX_REFERENCES = 100;
+export const MAX_REVISIONS = 200;
+export const MAX_SAFE_INTEGER = 9007199254740991;
+export const MAX_TARGETS = 50;

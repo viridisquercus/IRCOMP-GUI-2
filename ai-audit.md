@@ -2,10 +2,19 @@
 
 ### Name: Lukas (Viridis) Dubsik
 
-## Scope
+## Earlier reported use
 
-AI contributed substantially to parts of the code while having no effect on most others. The main area where AI was used was during testing creation - where the testing files in cypress were fully ai generated, with me only providing the cucumber description and AI doing the rest.
+The Cypress tests were reported as AI-generated from the author's Cucumber
+scenario descriptions. This is a record of that reported work, not a complete
+authorship history of the project.
 
-AI was generally used to solve errors, find inconsistencies, or offer insights how to make code better and more effective. Another use of AI was adversory analysis - taking role of adversary to find any problems, errors, inconsistencies or lacking parts of the code or application. AI was also used to take role of multiple users to improve the app design for core user group.
+## Shared definitions and API responses
 
-No core functionality was implemneted by AI!
+The model/schema synchronization, typed API responses and response-validation
+changes were implemented with OpenAI Codex assistance. This includes the new
+generator, response models, client response checker and focused tests.
+
+The exchange schema and browser files marked as generated are produced by
+`scripts/generate_contracts.py` from the Python models. They are ordinary script
+output; their generated status does not establish the authorship of the source
+models. Existing code outside these changes was not re-audited for authorship.

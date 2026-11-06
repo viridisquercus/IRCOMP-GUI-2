@@ -19,9 +19,10 @@ from __future__ import annotations
 import hashlib
 from collections import OrderedDict
 from dataclasses import dataclass
-from typing import Any
+from typing import Literal
 
 from ircomp_gui.application.ports import ExchangePort, SavedStudy
+from ircomp_gui.application.responses import ExportPreviewView
 from ircomp_gui.application.workspace import WorkspaceService
 from ircomp_gui.domain.constants import MAX_EXPORTS
 from ircomp_gui.domain.errors import DomainError
@@ -29,6 +30,8 @@ from ircomp_gui.domain.models import (
     Collection,
     EvidenceFile,
     RequestSnapshot,
+    ReviewPackage,
+    ReviewSourceFile,
     Revision,
     Study,
 )
@@ -51,13 +54,13 @@ class ExportFile:
         Contents of the file
     filename : str
         Name offered to the browser
-    summary : dict
+    summary : ExportPreviewView
         Description shown in the export preview
     """
 
     raw: bytes
     filename: str
-    summary: dict[str, Any]
+    summary: ExportPreviewView
 
 
 def request_snapshot(study: Study, revision_id: str) -> RequestSnapshot:
@@ -153,7 +156,7 @@ class ExportService:
         revision_id: str,
         collection_ids: list[str],
         selected: list[Collection],
-    ) -> tuple[dict[str, Any], list[EvidenceFile], int, str]:
+    ) -> tuple[ReviewPackage, list[EvidenceFile], int, Literal["draft", "reviewed"]]:
         # All selected collections have to exist and belong to the revision
         belongs = True
         for item in selected:
@@ -167,28 +170,28 @@ class ExportService:
 
         evidence = _used_evidence(saved.study, revision_id, selected)
         count = unresolved(selected)
-        status = "draft" if count else "reviewed"
+        status: Literal["draft", "reviewed"] = "draft" if count else "reviewed"
 
-        files: list[dict[str, str]] = []
+        files: list[ReviewSourceFile] = []
         for item in evidence:
             files.append(
-                {
-                    "bundle_id": item.bundle.bundle_id,
-                    "sha256": item.sha256,
-                    "content_base64": item.content_base64,
-                }
+                ReviewSourceFile(
+                    bundle_id=item.bundle.bundle_id,
+                    sha256=item.sha256,
+                    content_base64=item.content_base64,
+                )
             )
 
-        document = {
-            "kind": "review",
-            "format_version": "1.0",
-            "request": request.model_dump(mode="json"),
-            "source_saved_version": saved.saved_version,
-            "collections": [item.model_dump(mode="json") for item in selected],
-            "evidence_files": files,
-            "review_status": status,
-            "unresolved_count": count,
-        }
+        document = ReviewPackage(
+            kind="review",
+            format_version="1.0",
+            request=request,
+            source_saved_version=saved.saved_version,
+            collections=selected,
+            evidence_files=files,
+            review_status=status,
+            unresolved_count=count,
+        )
         return document, evidence, count, status
 
     def _summary(
@@ -196,43 +199,41 @@ class ExportService:
         raw: bytes,
         saved: SavedStudy,
         revision: Revision,
-        kind: str,
-        status: str | None,
+        kind: Literal["request", "review"],
+        status: Literal["draft", "reviewed"] | None,
         evidence: list[EvidenceFile],
         selected: list[Collection],
         count: int,
-    ) -> dict[str, Any]:
+    ) -> ExportPreviewView:
         study = saved.study
         candidates = 0
         for item in evidence:
             candidates += len(item.bundle.candidates)
 
-        return {
-            "export_id": self.workspace.new_id(),
-            "filename": (
-                f"study-{study.study_id[:8]}-{revision.revision_id[:8]}.{kind}.json"
-            ),
-            "sha256": hashlib.sha256(raw).hexdigest(),
-            "byte_length": len(raw),
-            "study_id": study.study_id,
-            "saved_version": saved.saved_version,
-            "revision_id": revision.revision_id,
-            "kind": kind,
-            "review_status": status,
-            "target_count": len(revision.targets),
-            "candidate_count": candidates,
-            "collection_count": len(selected),
-            "unresolved_count": count,
-            "dependency_count": _count_dependencies(evidence),
-        }
+        return ExportPreviewView(
+            export_id=self.workspace.new_id(),
+            filename=f"study-{study.study_id[:8]}-{revision.revision_id[:8]}.{kind}.json",
+            sha256=hashlib.sha256(raw).hexdigest(),
+            byte_length=len(raw),
+            study_id=study.study_id,
+            saved_version=saved.saved_version,
+            revision_id=revision.revision_id,
+            kind=kind,
+            review_status=status,
+            target_count=len(revision.targets),
+            candidate_count=candidates,
+            collection_count=len(selected),
+            unresolved_count=count,
+            dependency_count=_count_dependencies(evidence),
+        )
 
     def prepare(
         self,
         study_id: str,
         revision_id: str,
-        kind: str,
+        kind: Literal["request", "review"],
         collection_ids: list[str],
-    ) -> dict[str, Any]:
+    ) -> ExportPreviewView:
         """Prepare the chosen saved data and describe the resulting download.
 
         Parameters
@@ -248,7 +249,7 @@ class ExportService:
 
         Returns
         -------
-        dict
+        ExportPreviewView
             Summary of the prepared file, with its export ID
         """
         with self.workspace.lock:
@@ -275,14 +276,14 @@ class ExportService:
             # Build the document of the chosen kind
             evidence: list[EvidenceFile] = []
             count = 0
-            status: str | None = None
+            status: Literal["draft", "reviewed"] | None = None
             if kind == "request":
                 if collection_ids:
                     raise DomainError(
                         "SCHEMA_INVALID",
                         "Request exports cannot select review collections.",
                     )
-                document: dict[str, Any] = request.model_dump(mode="json")
+                document: RequestSnapshot | ReviewPackage = request
             elif kind == "review":
                 document, evidence, count, status = self._review_document(
                     saved, request, revision_id, collection_ids, selected
@@ -291,14 +292,15 @@ class ExportService:
                 raise DomainError("SCHEMA_INVALID", "Choose request or review export.")
 
             # Check against the schema and encode it
-            self.exchange.validate_document(document)
-            raw = encode_json(document)
+            payload = document.model_dump(mode="json")
+            self.exchange.validate_document(payload)
+            raw = encode_json(payload)
 
             summary = self._summary(
                 raw, saved, revision, kind, status, evidence, selected, count
             )
-            export_id = summary["export_id"]
-            self.files[export_id] = ExportFile(raw, summary["filename"], summary)
+            export_id = summary.export_id
+            self.files[export_id] = ExportFile(raw, summary.filename, summary)
 
             # Drop the oldest prepared files
             while len(self.files) > MAX_EXPORTS:

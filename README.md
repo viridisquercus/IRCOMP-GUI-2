@@ -68,7 +68,7 @@ Review shows the evidence of the selected revision. Import an evidence file, or 
 Select a candidate and add it to a collection. The decision (disposition), its reason and the other candidates supporting it are stored in that collection. One candidate can be in more collections with a different decision in each of them. The imported scores never change. A score of 0 is a real value and is shown differently from a score that wasn't sent at all.
 
 ### Save and export
-**Apply** changes the open study, **Save study** writes it into SQLite, including any edits you haven't applied yet (so they aren't lost). **Undo** goes one change back. After a save there is nothing to undo.
+**Apply** changes the open study. **Save study** writes it into SQLite, including the unapplied target and decision drafts. Other pending inputs, such as a title not yet renamed, are not saved as drafts. **Undo** goes one change back. After a save there is nothing to undo.
 
 Export only uses saved data. Choose the request or the review package, check the preview and download the JSON. If some decisions aren't finished, the review package is marked as a draft. The package contains the original evidence files together with their checksums. Unapplied edits are never exported.
 
@@ -80,9 +80,11 @@ The Python code is in `src/ircomp_gui`:
 | `domain` | Data classes, catalogue of references, checks, limits (`constants.py`) |
 | `application` | Operations - editing, import, save, undo and export |
 | `adapters` | SQLite storage and reading of the JSON files |
-| `api` | HTTP routes and bodies of the requests |
+| `api` | HTTP routes and bodies of the requests; response models are in `application/responses.py` |
 
 The React code is in `web/src`. There is one shared state (a reducer) and the views only dispatch changes to it, all the calls to Python go through `app/controller.ts`. Each view has its own stylesheet next to it, the shared styles are in `styles/base.css`.
+
+The exchange schema and browser data types are generated from the Python definitions. After changing the models, run `make contracts` and commit the generated files too. Numeric limits come from `domain/constants.py`; collection completion counts are calculated by the backend. API responses are checked by FastAPI and by the browser before entering the shared state. See [Updating the format](contracts/README.md#updating-the-format) for the generated paths and file-only rules.
 
 More is written in [Architecture](docs/architecture.md) (classes and API), [File formats](contracts/README.md) (the JSON exchange) and [Design](docs/design/README.md) (wireframes). The plans for connecting it to IRCOMP are in the [IRCOMP integration notes](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897).
 
@@ -94,10 +96,12 @@ make install-dev
 make check
 ```
 
-This runs *Ruff* (lint and formatting), *Pyright* in strict mode, the TypeScript compiler and *Prettier* (also over the Cypress tests and the test runner). `make format` fixes the formatting. Python uses typed functions, NumPy docstrings, four spaces and double quotes, TypeScript two spaces and double quotes. The settings are in `pyproject.toml`, `web/tsconfig.json` and `web/.prettierrc.json`.
+This checks that generated files match their source, then runs *Ruff* (lint and formatting), *Pyright* in strict mode, the TypeScript compiler and *Prettier* (also over the Cypress tests and test runners). `make format` fixes the formatting. Python uses typed functions, NumPy docstrings, four spaces and double quotes, TypeScript two spaces and double quotes. The settings are in `pyproject.toml`, `web/tsconfig.json` and `web/.prettierrc.json`.
 
 ## Testing
-After installation run `make test`. It builds the client, starts its own server and runs 11 Cypress scenarios against a temporary SQLite database (all AI generated), so your saved studies are never touched. Both the server and the database are removed at the end.
+After installation run `make test`. It builds the client, runs the Python and client contract tests, then starts a temporary server for the 11 Cypress scenarios. The tests use a temporary SQLite database, so your saved studies are never touched. Both the server and the database are removed at the end.
+
+Use `make test-contracts` to run just the in-process Python tests and client response checks, without opening a local port. `make check` performs static and generated-file checks; it does not run these behavioral tests.
 
 The tests go through editing, recovery of unapplied edits, Undo, imports, decisions in collections, downloading the review, and requests that fail or come back late. `npm --prefix web run test:e2e:open` opens the Cypress window instead (build the client first). The scenarios are described in [testing](docs/testing.md).
 

@@ -17,7 +17,7 @@ The application is split into the Python model and the React interface. Prepare 
 | `web/src/shared` | HTTP helper, types, constants and the import preview |
 | `web/src/styles` | Colours and styles shared by all the views |
 
-All the limits (file sizes, number of targets, revisions, collections...) are in `domain/constants.py`. The few the browser needs for earlier messages are repeated in `web/src/shared/constants.ts`, but the service checks all of them again anyway.
+All the limits (file sizes, number of targets, revisions, collections...) are in `domain/constants.py`. The generator copies them into `web/src/shared/constants.generated.ts`. `constants.ts` re-exports the limits used by the views and keeps browser-only settings such as the API prefix and session-storage key. Numeric limits are not maintained separately in TypeScript.
 
 A click in the GUI goes to the controller, which sends a request to FastAPI. The route passes it to a service in `application`, the service checks the data (using `domain`) and returns the changed study. The controller then gives the response to the reducer and every view using the study is drawn again. The page itself never reloads.
 
@@ -37,7 +37,7 @@ React view -> controller -> fetch -> FastAPI -> application -> domain
 
 An evidence file has the candidates and the exact revision they were produced for. Candidate IDs are only unique inside one file (bundle), that's why `CandidateKey` is made of both the bundle ID and the candidate ID. `Membership` stores the decision about a candidate inside one collection, the candidate itself is never changed.
 
-`TargetDraft` and `DecisionDraft` hold the text from the editors which isn't applied yet. For example an empty end coordinate stays an empty string in the draft, instead of becoming a broken target. The drafts are saved too (so nothing typed is lost), but they are never exported.
+`TargetDraft` and `DecisionDraft` hold the text from the editors which isn't applied yet. For example an empty end coordinate stays an empty string in the draft, instead of becoming a broken target. Save includes the target and decision draft buffers, but they are never exported. Other pending fields, such as a study title or replacement-reference inputs, are not part of these buffers; saving does not preserve all text in every control.
 
 `Session` holds the open study, its last saved copy and one previous copy for Undo. `WorkspaceService` keeps the sessions. `PrepareService` changes the targets and the reference, `ReviewService` the collections and decisions.
 
@@ -51,7 +51,7 @@ The client counts the changes of the editor text (`generation` in `state.ts`). I
 
 ## HTTP interface
 
-All the routes start with `/api/v1`. The bodies of the requests are in `api/requests.py`. FastAPI generates the full schema on `/openapi.json`, a readable version is on `/docs`.
+All the routes start with `/api/v1`. The bodies of the requests are in `api/requests.py`; response models are in `application/responses.py`. FastAPI uses the return annotations to validate successful data responses and describe them in `/openapi.json` and `/docs`. File downloads return the prepared bytes and follow the exchange-file schema instead of a browser response model.
 
 | Route | What it does |
 |-|-|
@@ -76,3 +76,22 @@ Errors look like `{error: {code, message, diagnostics}}`. A diagnostic can point
 ## Connection to IRCOMP
 
 The application works without IRCOMP. Its JSON schema is in `contracts`, the future mapping to the compiler and the F01-F10 checks are in the [integration notes](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897). IRCOMP will own the specification language, goals, constraints, cartridge rules, the compiler and running the analysis. The GUI will only edit the supported input and show the output. Whatever the GUI can't represent has to be reported, not silently dropped.
+
+## Shared data definitions
+
+Python models define the exchange files and API responses. `make contracts`
+regenerates `contracts/exchange.schema.json`, browser types, response schemas and
+limit constants. These generated files are committed so that building the client
+does not require Python. Edit the Python definitions, then regenerate them;
+`make check` compares fresh output with the committed files without overwriting them. See the [format-maintenance table](../contracts/README.md#updating-the-format) for the source and output paths.
+
+Application services return the models in `application/responses.py`. FastAPI
+uses these return annotations to validate responses and describe them in OpenAPI.
+The browser checks response data against the generated schemas before updating
+its state. The response checker covers the schema keywords emitted by these
+models; generation fails if a new validation keyword needs browser support.
+
+`StudyData` holds fields shared by the stored `Study` and the browser `StudyView`. `Study` retains the evidence bytes; `StudyView` omits them. `DecisionDraft` inherits the decision fields from `Membership`. Collection views include
+the unresolved count calculated by the Python review rules. The browser only
+adds those counts for a selection. Immediate interval checks remain in the
+browser for feedback while typing; the domain checks remain authoritative.

@@ -9,7 +9,7 @@ From the root of the repository, after `make install`, run:
 make test
 ```
 
-This builds the client and runs Cypress in headless Electron. The runner (`web/scripts/test.mjs`) starts the Python application on a free port with its own temporary SQLite database, so the normal database is never used. At the end the server is stopped and its database and log are deleted.
+This builds the client, runs `make test-contracts`, then runs Cypress in headless Electron. The runner (`web/scripts/test.mjs`) starts the Python application on a free port with its own temporary SQLite database, so the normal database is never used. At the end the server is stopped and its database and log are deleted.
 
 To watch the tests in the Cypress window, build the client first and then open it:
 
@@ -47,6 +47,26 @@ The tests click through the real GUI against the real HTTP routes and SQLite, th
 
 There are no automatic retries and no fixed waits, the tests always wait for a request or for the expected state. When something fails, the screenshots are in `web/cypress/screenshots` and the downloaded files in `web/cypress/downloads` (both ignored by Git).
 
-`make check` type-checks the test files, the Cypress configuration and the runner too. The last run passed all 11 scenarios (6.11.2026, Node 20.20.2, Cypress 15.21.1, Electron on Linux).
+`make check` type-checks the test files, the Cypress configuration and the runners too. An earlier browser run was recorded as passing all 11 scenarios on 6.11.2026 with Node 20.20.2, Cypress 15.21.1 and Electron on Linux. That record predates the shared-definition and response-validation changes; it is not a Cypress result for the current implementation.
 
 These tests only check that the features work and recover from errors. They don't test load, the biology, or whether the interface is easy to use - that would need real users.
+
+## Data definitions and API responses
+
+Run `make test-contracts` for the focused Python and client checks. The Python
+suite calls the ASGI routes in process, with synchronous handlers run inline.
+It checks response-model enforcement, the import/save/export path, source bytes,
+published limits and exchange-file constraints, including target-label keys and values. It does not test network or
+worker-thread scheduling.
+
+The client suite compiles the HTTP helper and generated definitions, then checks
+valid responses, missing nested fields, invalid dictionary values, malformed
+JSON and application errors. `make check` computes fresh definitions in check
+mode and reports stale generated files without changing them.
+
+For the shared-definition follow-up on 6.11.2026, the six Python tests and four
+client tests passed, along with generated-file freshness, Ruff lint/format,
+strict Pyright, TypeScript, Prettier and the production build. Ruff 0.15.1 was
+available for these checks; the project pins 0.17.3. Cypress could not start
+because the execution environment blocks listening on a loopback port. The
+in-process checks do not replace that browser run.

@@ -18,16 +18,18 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass
-from typing import Any
+from typing import Literal
 
 from pydantic import ValidationError
 
 from ircomp_gui.application.ports import ExchangePort
+from ircomp_gui.application.responses import ImportPreviewView, ImportSummary
 from ircomp_gui.application.workspace import Session, WorkspaceService
 from ircomp_gui.domain.constants import MAX_PREVIEWS
 from ircomp_gui.domain.errors import DomainError
 from ircomp_gui.domain.models import (
     Collection,
+    Diagnostic,
     DraftBuffers,
     EvidenceBundle,
     EvidenceFile,
@@ -57,7 +59,7 @@ class ImportPreview:
         Parsed file, None if parsing failed
     workspace_id : str | None
         Session the evidence is meant for, None for a request
-    response : dict
+    response : ImportPreviewView
         Description sent to the client
     """
 
@@ -67,7 +69,7 @@ class ImportPreview:
     raw: bytes
     parsed: RequestSnapshot | EvidenceBundle | None
     workspace_id: str | None
-    response: dict[str, Any]
+    response: ImportPreviewView
 
 
 def _find_evidence(study: Study, bundle_id: str) -> EvidenceFile | None:
@@ -78,7 +80,7 @@ def _find_evidence(study: Study, bundle_id: str) -> EvidenceFile | None:
     return None
 
 
-def _received_context(raw: bytes, kind: str) -> dict[str, Any] | None:
+def _received_context(raw: bytes, kind: str) -> Revision | None:
     # Try to read the context from the file even if it is invalid otherwise,
     # so the user can see what the file was produced for
     document = parse_json(raw)
@@ -89,7 +91,7 @@ def _received_context(raw: bytes, kind: str) -> dict[str, Any] | None:
     if context is None:
         return None
     try:
-        return Revision.model_validate(context).model_dump()
+        return Revision.model_validate(context)
     except ValidationError:
         return None
 
@@ -112,31 +114,31 @@ class ImportService:
         self.exchange = exchange
         self.previews: dict[str, ImportPreview] = {}
 
-    def _describe_request(self, request: RequestSnapshot) -> dict[str, Any]:
+    def _describe_request(self, request: RequestSnapshot) -> ImportSummary:
         # Say if the request is already saved, it can't be imported twice
         collision = self.workspace.repository.identity_exists(
             request.study_id, request.request_id
         )
-        return {
-            "study_id": request.study_id,
-            "request_id": request.request_id,
-            "revision_id": request.revision.revision_id,
-            "reference_id": request.revision.reference_id,
-            "target_count": len(request.revision.targets),
-            "existing_study_id": collision,
-        }
+        return ImportSummary(
+            study_id=request.study_id,
+            request_id=request.request_id,
+            revision_id=request.revision.revision_id,
+            reference_id=request.revision.reference_id,
+            target_count=len(request.revision.targets),
+            existing_study_id=collision,
+        )
 
-    def _describe_evidence(self, bundle: EvidenceBundle) -> dict[str, Any]:
-        return {
-            "bundle_id": bundle.bundle_id,
-            "request_id": bundle.request_id,
-            "revision_id": bundle.context.revision_id,
-            "reference_id": bundle.context.reference_id,
-            "profile_id": bundle.context.profile_id,
-            "category": bundle.category,
-            "candidate_count": len(bundle.candidates),
-            "source": bundle.source.model_dump(),
-        }
+    def _describe_evidence(self, bundle: EvidenceBundle) -> ImportSummary:
+        return ImportSummary(
+            bundle_id=bundle.bundle_id,
+            request_id=bundle.request_id,
+            revision_id=bundle.context.revision_id,
+            reference_id=bundle.context.reference_id,
+            profile_id=bundle.context.profile_id,
+            category=bundle.category,
+            candidate_count=len(bundle.candidates),
+            source=bundle.source,
+        )
 
     def _check_evidence(
         self,
@@ -145,7 +147,7 @@ class ImportService:
         expected: Revision | None,
         raw: bytes,
         content_base64: str,
-    ) -> str:
+    ) -> Literal["ready", "duplicate"]:
         # The evidence has to be for exactly the selected revision
         if (
             session is None
@@ -176,11 +178,11 @@ class ImportService:
 
     def preview(
         self,
-        kind: str,
+        kind: Literal["request", "evidence"],
         content_base64: str,
         workspace_id: str | None = None,
         revision_id: str | None = None,
-    ) -> dict[str, Any]:
+    ) -> ImportPreviewView:
         """Inspect the exact bytes of the file and keep them for confirmation.
 
         A file with problems is still previewed (as blocked), so the user
@@ -199,7 +201,7 @@ class ImportService:
 
         Returns
         -------
-        dict
+        ImportPreviewView
             Description of the preview for the client
         """
         raw = decode_base64(content_base64)
@@ -219,37 +221,46 @@ class ImportService:
                 expected = revision_by_id(session.study, revision_id)
 
             parsed: RequestSnapshot | EvidenceBundle | None = None
-            status = "ready"
-            diagnostics: list[dict[str, Any]] = []
-            summary: dict[str, Any] = {
-                "expected_context": expected.model_dump() if expected else None,
-                "received_context": None,
-            }
+            status: Literal["ready", "blocked", "duplicate"] = "ready"
+            diagnostics: list[Diagnostic] = []
+            summary = ImportSummary(expected_context=expected)
 
             # Any problem only blocks the preview, it is not an error
             try:
-                summary["received_context"] = _received_context(raw, kind)
+                summary = summary.model_copy(
+                    update={"received_context": _received_context(raw, kind)}
+                )
                 parsed = self.exchange.decode(raw, kind)
                 if isinstance(parsed, RequestSnapshot):
-                    summary.update(self._describe_request(parsed))
+                    summary = self._describe_request(parsed).model_copy(
+                        update={
+                            "expected_context": expected,
+                            "received_context": summary.received_context,
+                        }
+                    )
                 else:
-                    summary.update(self._describe_evidence(parsed))
+                    summary = self._describe_evidence(parsed).model_copy(
+                        update={
+                            "expected_context": expected,
+                            "received_context": summary.received_context,
+                        }
+                    )
                     status = self._check_evidence(
                         parsed, session, expected, raw, content_base64
                     )
             except DomainError as error:
                 status = "blocked"
-                diagnostics = [item.model_dump() for item in error.diagnostics]
+                diagnostics = error.diagnostics
 
             # Store the preview until it is accepted or cancelled
             preview_id = self.workspace.new_id()
-            response = {
-                "preview_id": preview_id,
-                "kind": kind,
-                "status": status,
-                "diagnostics": diagnostics,
-                "summary": summary,
-            }
+            response = ImportPreviewView(
+                preview_id=preview_id,
+                kind=kind,
+                status=status,
+                diagnostics=diagnostics,
+                summary=summary,
+            )
             self.previews[preview_id] = ImportPreview(
                 preview_id, kind, status, raw, parsed, workspace_id, response
             )
