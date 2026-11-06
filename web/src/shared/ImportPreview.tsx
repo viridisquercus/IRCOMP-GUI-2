@@ -1,17 +1,43 @@
-/*************************************************************************
- * Name: Lukas (Viridis) Dubsik
- *************************************************************************/
+/**
+ * @file ImportPreview.tsx
+ * @brief Panel describing an imported file before it is accepted
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ *
+ * Detailed description:
+ *  Used for both request and evidence imports. The study stays untouched
+ *  until the user presses Open request / Attach evidence.
+ */
 import { useWorkspace } from "../app/WorkspaceProvider";
+import type { ImportPreview } from "./types";
 
+/* Functions */
+/**
+ * @brief Text of the accept button
+ */
+function acceptLabel(preview: ImportPreview): string {
+  if (preview.kind === "request") return "Open request";
+  if (preview.status === "duplicate") return "Acknowledge duplicate";
+  return "Attach evidence";
+}
+
+/* Components */
 export function ImportPreviewPanel() {
   const { state, controller } = useWorkspace();
   const preview = state.importPreview;
   if (!preview) return null;
-  const expected = preview.summary.expected_context;
-  const received = preview.summary.received_context;
+
+  const summary = preview.summary;
+  const expected = summary.expected_context;
+  const received = summary.received_context;
+  const blocked = preview.status === "blocked";
+  // A saved request can't be imported again, it has to be opened
+  const alreadySaved = !!summary.existing_study_id;
+
   return (
     <section
-      className={`panel import-preview ${preview.status === "blocked" ? "warning-border" : ""}`}
+      className={`panel import-preview ${blocked ? "warning-border" : ""}`}
       aria-label="Import preview"
     >
       <div className="panel-heading">
@@ -21,9 +47,7 @@ export function ImportPreviewPanel() {
             {preview.kind === "request" ? "Request" : "Evidence"} import preview
           </h2>
         </div>
-        <span
-          className={`badge ${preview.status === "blocked" ? "amber" : "teal"}`}
-        >
+        <span className={`badge ${blocked ? "amber" : "teal"}`}>
           {preview.status}
         </span>
       </div>
@@ -46,17 +70,15 @@ export function ImportPreviewPanel() {
         <div>
           <dt>Records</dt>
           <dd>
-            {preview.summary.candidate_count ??
-              preview.summary.target_count ??
-              "Not available"}
+            {summary.candidate_count ?? summary.target_count ?? "Not available"}
           </dd>
         </div>
         <div>
           <dt>Evidence category</dt>
-          <dd>{preview.summary.category ?? "Request only"}</dd>
+          <dd>{summary.category ?? "Request only"}</dd>
         </div>
       </dl>
-      {preview.summary.existing_study_id && (
+      {alreadySaved && (
         <p className="notice">
           This request identity already exists. Open the saved study from the
           study selector; import cannot overwrite it.
@@ -69,18 +91,10 @@ export function ImportPreviewPanel() {
       ))}
       <div className="actions">
         <button
-          disabled={
-            state.busy ||
-            preview.status === "blocked" ||
-            !!preview.summary.existing_study_id
-          }
+          disabled={state.busy || blocked || alreadySaved}
           onClick={() => void controller.acceptImport()}
         >
-          {preview.kind === "request"
-            ? "Open request"
-            : preview.status === "duplicate"
-              ? "Acknowledge duplicate"
-              : "Attach evidence"}
+          {acceptLabel(preview)}
         </button>
         <button
           className="secondary"

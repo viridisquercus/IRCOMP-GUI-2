@@ -1,6 +1,10 @@
-/*************************************************************************
- * Name: Lukas (Viridis) Dubsik
- *************************************************************************/
+/**
+ * @file review.cy.ts
+ * @brief Tests of evidence import, review decisions and review export
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
 import type { ExportPreview } from "../../src/shared/types";
 import {
   attachEvidence,

@@ -1,6 +1,15 @@
-/*************************************************************************
- * Name: Lukas (Viridis) Dubsik
- *************************************************************************/
+/**
+ * @file styles.css
+ * @brief Styles of the whole web client
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ *
+ * Detailed description:
+ *  Colours are kept in the variables on :root.
+ *  Sections follow the layout of the page from the top.
+ */
+/* Colours and base */
 :root {
   font-family: Inter, "Segoe UI", system-ui, sans-serif;
   color: #233c3b;
@@ -24,6 +33,7 @@ select,
 textarea {
   font: inherit;
 }
+/* Buttons */
 button,
 .button,
 .file-button {
@@ -80,6 +90,7 @@ button.small {
   outline: 3px solid #2777bb;
   outline-offset: 3px;
 }
+/* Header */
 .skip-link {
   position: absolute;
   left: 16px;
@@ -145,6 +156,7 @@ button.small {
   border-radius: 50%;
   display: inline-block;
 }
+/* Typography */
 main {
   max-width: 1540px;
   padding: 32px 42px 0;
@@ -183,6 +195,7 @@ p {
   font-weight: 700;
   margin: 0 0 6px;
 }
+/* Save controls and panels */
 .workspace-heading {
   display: flex;
   align-items: center;
@@ -251,6 +264,7 @@ summary {
 .import-request-control .file-button {
   margin: 8px 0;
 }
+/* Status and toolbar */
 .live-status {
   color: var(--teal);
   font-size: 12px;
@@ -321,6 +335,7 @@ nav button span {
   color: #846020;
   margin-left: auto;
 }
+/* Layout of the views */
 .section-intro {
   display: flex;
   justify-content: space-between;
@@ -347,6 +362,7 @@ nav button span {
   display: grid;
   gap: 16px;
 }
+/* Target and candidate lists */
 .count {
   background: #edf3ef;
   border-radius: 4px;
@@ -422,6 +438,7 @@ nav button span {
 .panel-footer p {
   font-size: 10px;
 }
+/* Forms */
 label,
 .label {
   display: block;
@@ -493,6 +510,7 @@ legend {
 .actions.wrap {
   flex-wrap: wrap;
 }
+/* Badges and metadata */
 .badge {
   display: inline-flex;
   padding: 5px 8px;
@@ -544,6 +562,7 @@ dd {
   font-size: 0.91em;
   overflow-wrap: anywhere;
 }
+/* Empty states, notices and errors */
 .empty {
   text-align: center;
   padding: 55px 25px;
@@ -610,6 +629,7 @@ dd {
 .warning-border {
   border-color: #d8bd7c;
 }
+/* Problems and checks */
 .problem {
   display: block;
   width: 100%;
@@ -650,6 +670,7 @@ dd {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+/* Context editor */
 .context-editor {
   margin-top: 20px;
 }
@@ -674,6 +695,7 @@ dd {
 .context-target input {
   margin-top: 6px;
 }
+/* Review */
 .evidence-strip {
   display: flex;
   gap: 8px;
@@ -777,6 +799,7 @@ pre {
   accent-color: var(--teal);
   flex-shrink: 0;
 }
+/* Export */
 .export-grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(250px, 1fr);
@@ -834,6 +857,7 @@ pre {
   font-size: 10px;
   color: var(--muted);
 }
+/* Welcome page */
 .welcome-grid {
   padding: 55px 40px 65px;
   margin: 32px 0;
@@ -893,6 +917,7 @@ pre {
   font-weight: 400;
   color: var(--muted);
 }
+/* Footer */
 .workspace-footer {
   display: flex;
   justify-content: space-between;
@@ -903,6 +928,7 @@ pre {
   font-size: 10px;
   color: var(--muted);
 }
+/* Narrow screens */
 @media (max-width: 1200px) {
   main {
     padding: 25px 24px 0;

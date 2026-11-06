@@ -1,6 +1,10 @@
-/*************************************************************************
- * Name: Lukas (Viridis) Dubsik
- *************************************************************************/
+/**
+ * @file helpers.ts
+ * @brief Steps shared by the end to end tests
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
 import type {
   Bundle,
   Collection,
@@ -8,6 +12,8 @@ import type {
   Workspace,
 } from "../src/shared/types";
 
+/* Types */
+// Fields of the request file the tests change
 type RequestFile = {
   study_id: string;
   request_id: string;
@@ -16,12 +22,17 @@ type RequestFile = {
   target_labels: Record<string, string>;
 };
 
+// Fields of the exported review the tests read
 export type ReviewFile = {
   review_status: "draft" | "reviewed";
   collections: Collection[];
   evidence_files: { content_base64: string; sha256: string }[];
 };
 
+/* Functions */
+/**
+ * @brief Open the application and create a new empty study
+ */
 export function createStudy(title: string) {
   cy.visit("/");
   cy.contains("summary", "New / Open / Rename / Duplicate").click();
@@ -30,6 +41,9 @@ export function createStudy(title: string) {
   cy.contains("h1", "Prepare the request").should("be.visible");
 }
 
+/**
+ * @brief Add one target and wait until it is accepted
+ */
 export function addTarget(label = "Test interval", start = "100", end = "200") {
   cy.contains("button", "+ Add target").click();
   cy.get("#target-label").clear().type(label);
@@ -39,11 +53,19 @@ export function addTarget(label = "Test interval", start = "100", end = "200") {
   cy.get(".context-strip").should("contain.text", "1 accepted targets");
 }
 
+/**
+ * @brief Save the study and wait for the saved state
+ */
 export function saveStudy() {
   cy.contains("button", /^Save study$/).click();
   cy.get(".save-status").should("contain.text", "Saved");
 }
 
+/**
+ * @brief Read the open workspace straight from the service
+ *
+ * Used to check what was really accepted, not only what is shown.
+ */
 export function readWorkspace() {
   return cy.window().then((window) => {
     const id = window.sessionStorage.getItem("ircomp.workspace");
@@ -52,6 +74,11 @@ export function readWorkspace() {
   });
 }
 
+/**
+ * @brief Import the example request with new identities
+ *
+ * @return The imported request and matching evidence
+ */
 export function importStudy() {
   // Give every scenario a separate lineage, even when a previous one saved it.
   return cy.fixture<RequestFile>("request-valid.json").then((request) => {
@@ -79,6 +106,9 @@ export function importStudy() {
   });
 }
 
+/**
+ * @brief Choose an evidence file and wait for its preview
+ */
 export function inspectEvidence(evidence: Bundle) {
   cy.get('[aria-label="Import evidence file"]').selectFile(
     {
@@ -91,6 +121,9 @@ export function inspectEvidence(evidence: Bundle) {
   cy.get('[aria-label="Import preview"]').should("be.visible");
 }
 
+/**
+ * @brief Go to Review and attach the evidence
+ */
 export function attachEvidence(evidence: Bundle) {
   cy.contains("nav button", "Review").click();
   inspectEvidence(evidence);

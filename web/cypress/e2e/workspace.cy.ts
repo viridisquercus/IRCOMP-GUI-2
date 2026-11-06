@@ -1,6 +1,10 @@
-/*************************************************************************
- * Name: Lukas (Viridis) Dubsik
- *************************************************************************/
+/**
+ * @file workspace.cy.ts
+ * @brief Tests of preparing, saving and undoing a study
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
 import { addTarget, createStudy, readWorkspace, saveStudy } from "../helpers";
 
 describe("Preparing and saving a study", () => {

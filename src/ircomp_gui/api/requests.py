@@ -1,6 +1,10 @@
-# /************************************************************************
-# Name: Lukas (Viridis) Dubsik
-# ************************************************************************/
+# ************************************************************************
+# @file requests.py
+# @brief Bodies of the HTTP requests sent by the web client
+# @author Lukas (Viridis) Dubsik
+# @date 6-11-2026
+# @version 0.1
+# ************************************************************************
 
 """Define the data received from the web client."""
 
@@ -9,25 +13,30 @@ from typing import Annotated, Literal
 from pydantic import Field
 
 from ircomp_gui.application.commands import Command
+from ircomp_gui.domain.constants import MAX_BASE64, MAX_COLLECTIONS
 from ircomp_gui.domain.models import DraftBuffers, Id, Label, TargetDraft, Value
+
+# ---------------------------------------------------------------------------
+# Opening of a workspace - the source field says from what
+# ---------------------------------------------------------------------------
 
 
 class NewWorkspace(Value):
-    """Create an independently usable local request."""
+    """Create a new empty request."""
 
     source: Literal["new"]
     title: Label
 
 
 class SavedWorkspace(Value):
-    """Open a durable study in a separate session."""
+    """Open a saved study in a new session."""
 
     source: Literal["saved"]
     study_id: Id
 
 
 class DuplicateWorkspace(Value):
-    """Duplicate only the active request."""
+    """Duplicate only the active request of a session."""
 
     source: Literal["duplicate"]
     workspace_id: Id
@@ -46,45 +55,54 @@ CreateInput = Annotated[
     Field(discriminator="source"),
 ]
 
+# ---------------------------------------------------------------------------
+# Work in a workspace
+# ---------------------------------------------------------------------------
+
 
 class CommandInput(Value):
-    """Receive a study operation and the current editor text."""
+    """Receive a study operation together with the current editor text."""
 
     draft_buffers: DraftBuffers
     command: Command
 
 
 class SaveInput(Value):
-    """Explicit Save of accepted data and current editor buffers."""
+    """Save the accepted data and the current editor text."""
 
     draft_buffers: DraftBuffers
 
 
 class CloseInput(Value):
-    """Explicit confirmation of working-copy discard."""
+    """Confirm that the working copy can be thrown away."""
 
     discard: Literal[True]
 
 
 class ValidateInput(Value):
-    """Local validation only, including a separate unapplied editor buffer."""
+    """Run the local checks, the unapplied editor text is checked apart."""
 
     revision_id: Id
     target_draft: TargetDraft | None
 
 
+# ---------------------------------------------------------------------------
+# Import and export
+# ---------------------------------------------------------------------------
+
+
 class RequestImport(Value):
-    """Exact request bytes, base64 encoded for JSON transport."""
+    """Exact bytes of a request file, base64 encoded for JSON."""
 
     kind: Literal["request"]
-    content_base64: Annotated[str, Field(max_length=1398104)]
+    content_base64: Annotated[str, Field(max_length=MAX_BASE64)]
 
 
 class EvidenceImport(Value):
-    """Exact evidence bytes and explicitly selected request context."""
+    """Exact bytes of an evidence file and the request it is meant for."""
 
     kind: Literal["evidence"]
-    content_base64: Annotated[str, Field(max_length=1398104)]
+    content_base64: Annotated[str, Field(max_length=MAX_BASE64)]
     workspace_id: Id
     revision_id: Id
 
@@ -93,9 +111,9 @@ ImportInput = Annotated[RequestImport | EvidenceImport, Field(discriminator="kin
 
 
 class ExportInput(Value):
-    """Select saved request or review data for an export."""
+    """Choose the saved request or review data to export."""
 
     study_id: Id
     revision_id: Id
     kind: Literal["request", "review"]
-    collection_ids: Annotated[list[Id], Field(max_length=20)]
+    collection_ids: Annotated[list[Id], Field(max_length=MAX_COLLECTIONS)]

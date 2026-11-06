@@ -1,6 +1,15 @@
-/*************************************************************************
- * Name: Lukas (Viridis) Dubsik
- *************************************************************************/
+/**
+ * @file test.mjs
+ * @brief Start the service on a free port and run Cypress against it
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ *
+ * Detailed description:
+ *  Every run gets its own temporary database, so the tests never
+ *  touch the real saved studies.
+ *  Use --open for the interactive Cypress window.
+ */
 import { spawn } from "node:child_process";
 import { once } from "node:events";
 import {

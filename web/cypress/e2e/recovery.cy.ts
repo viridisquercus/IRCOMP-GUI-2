@@ -1,6 +1,10 @@
-/*************************************************************************
- * Name: Lukas (Viridis) Dubsik
- *************************************************************************/
+/**
+ * @file recovery.cy.ts
+ * @brief Tests of recovery from failed requests and stable exports
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
 import type { ExportPreview, Revision } from "../../src/shared/types";
 import { addTarget, createStudy, readWorkspace, saveStudy } from "../helpers";
 

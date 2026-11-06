@@ -1,0 +1,28 @@
+# Python - created by make install and by running the service
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ruff_cache/
+
+# Web client - created by npm ci and make build
+node_modules/
+web/dist/
+
+# Local databases (the default one is in ~/.local/share, but just in case)
+*.sqlite
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Created by make pack
+/release/
+
+# Output of the Cypress runs
+web/cypress/downloads/
+web/cypress/screenshots/
+web/cypress/videos/
+
+# Editor and OS files
+.DS_Store
+*.swp

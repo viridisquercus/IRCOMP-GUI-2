@@ -1,39 +1,60 @@
-/*************************************************************************
- * Name: Lukas (Viridis) Dubsik
- *************************************************************************/
+/**
+ * @file api.ts
+ * @brief Communication with the local Python service
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
+import { API_ROOT, MAX_FILE } from "./constants";
 import type { Diagnostic } from "./types";
 
+/* Classes */
+/**
+ * @brief Error reported by the service (or by the connection to it)
+ */
 export class ApiError extends Error {
   constructor(
-    public code: string,
+    public code: string, // Error code, such as INTERVAL_INVALID
     message: string,
-    public diagnostics: Diagnostic[] = [],
+    public diagnostics: Diagnostic[] = [], // Detailed problems by field
   ) {
     super(message);
   }
 }
 
-/** Send JSON to the local service and pass its error information to the view. */
+/* Functions */
+/**
+ * @brief Send JSON to the local service and turn its errors into ApiError
+ *
+ * @param path Route after /api/v1
+ * @param body Body to send, if undefined a GET is made
+ * @param method Overrides the method chosen from the body
+ * @return The parsed JSON response, undefined for 204
+ */
 export async function api<T>(
   path: string,
   body?: unknown,
   method?: string,
 ): Promise<T> {
+  const hasBody = body !== undefined;
+
   let response: Response;
   try {
-    response = await fetch(`/api/v1${path}`, {
-      method: method ?? (body === undefined ? "GET" : "POST"),
-      headers:
-        body === undefined ? undefined : { "Content-Type": "application/json" },
-      body: body === undefined ? undefined : JSON.stringify(body),
+    response = await fetch(API_ROOT + path, {
+      method: method ?? (hasBody ? "POST" : "GET"),
+      headers: hasBody ? { "Content-Type": "application/json" } : undefined,
+      body: hasBody ? JSON.stringify(body) : undefined,
     });
   } catch {
+    // fetch only throws when the service can't be reached at all
     throw new ApiError(
       "CONNECTION_FAILED",
       "The local service is unavailable. Keep your inputs and refresh working state before retrying.",
     );
   }
+
   if (!response.ok) {
+    // Error body may be missing (proxy error etc.), fall back to defaults
     const failure = await response.json().catch(() => null);
     throw new ApiError(
       failure?.error?.code ?? "HTTP_ERROR",
@@ -41,15 +62,23 @@ export async function api<T>(
       failure?.error?.diagnostics ?? [],
     );
   }
-  return response.status === 204
-    ? (undefined as T)
-    : ((await response.json()) as T);
+
+  // No content - nothing to parse
+  if (response.status === 204) return undefined as T;
+  return (await response.json()) as T;
 }
 
-/** Read the selected file after checking the supported import size. */
+/**
+ * @brief Read the chosen file as base64, after checking its size
+ *
+ * @param file File chosen by the user
+ * @return The file encoded in base64
+ */
 export async function fileBase64(file: File): Promise<string> {
-  if (file.size > 1048576)
+  if (file.size > MAX_FILE)
     throw new ApiError("LIMIT_EXCEEDED", "Choose a file no larger than 1 MiB.");
+
+  // btoa needs a binary string, one character per byte
   const bytes = new Uint8Array(await file.arrayBuffer());
   let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);

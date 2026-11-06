@@ -16,6 +16,10 @@ lists, details and counts. Export uses the saved copy of that study.
 | `web/src/features` | Prepare, Review and Export views |
 | `web/src/shared` | HTTP helper, shared types and import preview |
 
+All limits (file sizes, number of targets, revisions, collections and so on) are
+kept in `domain/constants.py`. The few the client needs for earlier messages are
+repeated in `web/src/shared/constants.ts`; the service checks all of them again.
+
 The GUI calls the controller, which sends a fetch request to FastAPI. The route
 passes the operation to an application service. That service checks the data and
 returns the changed study. The controller then sends the response to the reducer,
