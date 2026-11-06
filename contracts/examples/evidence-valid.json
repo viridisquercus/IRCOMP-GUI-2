@@ -1,0 +1,60 @@
+{
+  "kind": "evidence",
+  "format_version": "1.0",
+  "bundle_id": "00000000-0000-4000-8000-000000000005",
+  "request_id": "00000000-0000-4000-8000-000000000002",
+  "context": {
+    "revision_id": "00000000-0000-4000-8000-000000000003",
+    "reference_id": "demo-reference-v1",
+    "profile_id": "demo-spcas9-ngg-v1",
+    "coordinate_system": "0-based-half-open",
+    "targets": [
+      {
+        "target_id": "00000000-0000-4000-8000-000000000004",
+        "contig": "demo_contig",
+        "start": 100,
+        "end": 200,
+        "strand": "+"
+      }
+    ]
+  },
+  "category": "synthetic",
+  "source": {
+    "name": "Synthetic fixture",
+    "version": "1",
+    "uri": null
+  },
+  "candidates": [
+    {
+      "candidate_id": "demo-A",
+      "target_id": "00000000-0000-4000-8000-000000000004",
+      "label": "Synthetic candidate A",
+      "metrics": [
+        {
+          "name": "Example score",
+          "model": "synthetic-model-v1",
+          "unit": null,
+          "scale": "0 to 100 (example only)",
+          "direction": "higher",
+          "availability": "present",
+          "value": 0
+        },
+        {
+          "name": "Other example score",
+          "model": null,
+          "unit": null,
+          "scale": null,
+          "direction": null,
+          "availability": "not_supplied",
+          "value": null
+        }
+      ],
+      "raw_record": {
+        "fixture": true,
+        "original_score_text": "0",
+        "note": "No genomic analysis was performed."
+      }
+    }
+  ],
+  "dependencies": []
+}

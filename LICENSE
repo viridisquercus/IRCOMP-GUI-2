@@ -1,0 +1,157 @@
+# PROPRIETARY SOFTWARE LICENSE AND CONFIDENTIALITY NOTICE
+
+Copyright © 2026 Lukas (Viridis) Dubsik. All rights reserved.
+
+## 1. Proprietary and Confidential Software
+
+This repository and all materials contained within it, including without limitation source code, object code, scripts, configuration files, documentation, specifications, algorithms, models, data structures, designs, diagrams, test materials, build files, development materials, and other associated content (collectively, the **"Software"**), are proprietary and confidential.
+
+Except for third-party components expressly identified as being subject to separate license terms, all rights, title, and interests in the Software are reserved by Lukas (Viridis) Dubsik (the **"Owner"**).
+
+Access to this repository does not constitute publication of the Software and does not grant any ownership interest in the Software.
+
+## 2. Limited Authorization for Approved Collaborators
+
+A person who has been expressly granted access to this private repository by the Owner (an **"Authorized User"**) is granted a limited, revocable, non-exclusive, non-transferable, and non-sublicensable authorization to access and use the Software solely for work expressly authorized by the Owner in connection with this project.
+
+An Authorized User may create local copies of the Software only to the extent reasonably necessary to perform such authorized work and only on devices or systems under the Authorized User's control that are reasonably protected against unauthorized access.
+
+No other license or permission is granted, whether expressly, by implication, estoppel, or otherwise.
+
+## 3. No Disclosure or Distribution
+
+Without the Owner's prior explicit written permission, no person may disclose, distribute, transmit, publish, provide, sublicense, sell, lease, lend, share, expose, or otherwise make any part of the Software available to any other person or entity.
+
+This prohibition includes, without limitation:
+
+* publishing or transferring the Software to a public repository;
+* publishing or transferring the Software to another private repository not expressly authorized by the Owner;
+* creating or distributing unauthorized forks, mirrors, archives, or backups;
+* sending source code or other repository content to third parties;
+* posting code in messages, forums, issue trackers, paste services, snippets, gists, or similar services accessible by unauthorized persons;
+* providing repository contents to contractors, employees, consultants, collaborators, organizations, or other persons who have not independently been authorized by the Owner;
+* allowing another person to use an Authorized User's account, credentials, clone, checkout, or other copy of the Software; or
+* otherwise enabling an unauthorized person to inspect, obtain, reproduce, or use the Software.
+
+The fact that a person collaborates on the project, works for an organization associated with the project, or has knowledge of the project does not by itself authorize disclosure of the Software to that person.
+
+## 4. Artificial Intelligence and External Processing Services
+
+Unless expressly authorized in writing by the Owner, the Software or any substantial or confidential portion of it may not be submitted, uploaded, transmitted, or otherwise disclosed to:
+
+* generative artificial-intelligence services;
+* machine-learning training systems;
+* external code-analysis services;
+* external code-completion systems;
+* third-party debugging or analysis platforms; or
+* any other external service that may store, process, reproduce, retain, disclose, or use the Software.
+
+This restriction does not prohibit tools or services that have been expressly approved by the Owner for use with this project.
+
+## 5. Restrictions on Use
+
+Except where expressly authorized in writing by the Owner, no person may:
+
+1. use the Software for any purpose other than the development work specifically authorized by the Owner;
+2. use the Software, or knowledge obtained from access to it, to create, assist in creating, or improve a competing or independently commercialized product or service;
+3. commercially exploit the Software;
+4. license, sell, rent, sublicense, distribute, or otherwise provide the Software to another party;
+5. remove, obscure, or alter copyright, proprietary, confidentiality, or attribution notices;
+6. circumvent technical or organizational measures intended to restrict access to the Software;
+7. use the Software after authorization has expired or been revoked; or
+8. claim ownership of the Software or represent that access to the repository constitutes ownership or unrestricted permission to use it.
+
+## 6. Confidentiality
+
+The Software shall be treated as confidential information.
+
+Every Authorized User must take reasonable measures to prevent unauthorized access to, use of, copying of, or disclosure of the Software.
+
+An Authorized User who becomes aware of any actual or suspected unauthorized disclosure, access, loss, compromise, or distribution of the Software must promptly notify the Owner.
+
+The confidentiality obligations contained in this License survive termination or revocation of repository access for as long as the relevant information remains confidential or otherwise protected by applicable law.
+
+## 7. Contributions
+
+Permission to access this repository does not by itself determine the ownership or licensing of intellectual property created by an Authorized User.
+
+Unless the Owner expressly agrees otherwise in writing, any person contributing source code or other copyrightable material to this repository must do so subject to a separate employment agreement, contractor agreement, contributor agreement, or other written agreement governing the intellectual-property rights in those contributions.
+
+No provision of this License shall be interpreted as transferring ownership of a contributor's independently owned intellectual property except to the extent expressly provided in a separate legally binding agreement.
+
+## 8. Third-Party Components
+
+This License applies only to material for which the Owner is legally entitled to prescribe these terms.
+
+Third-party software, libraries, dependencies, assets, or other materials included in or used by the Software remain subject to their respective licenses and terms.
+
+Nothing in this License restricts rights that must be provided under an applicable third-party license.
+
+## 9. Revocation and Termination
+
+The Owner may revoke an Authorized User's permission to access or use the Software at any time unless otherwise provided by a separate written agreement.
+
+Authorization under this License terminates automatically if an Authorized User materially breaches these terms.
+
+Upon termination or revocation of authorization, the Authorized User must:
+
+1. cease accessing and using the Software;
+2. delete all local or remotely stored copies of the Software under their possession or control, except where retention is required by applicable law; and
+3. upon request, confirm to the Owner that such deletion has been completed.
+
+Termination does not affect obligations concerning confidentiality, unauthorized disclosure, intellectual-property rights, or liability arising before termination.
+
+## 10. Explicit Permission
+
+Where this License requires the Owner's **"explicit written permission,"** such permission must specifically identify the permission being granted and must originate from the Owner or a person expressly authorized by the Owner to grant such permission.
+
+Permission granted for one purpose, recipient, disclosure, or use does not constitute permission for any other purpose, recipient, disclosure, or use.
+
+Silence, repository access, participation in development, prior cooperation, or failure to enforce a restriction on one occasion does not constitute permission.
+
+## 11. Reservation of Rights
+
+All rights not expressly granted under this License are reserved by the Owner.
+
+Nothing in this License grants any right to use the Owner's trade names, trademarks, service marks, logos, product names, business names, or other branding.
+
+## 12. No Warranty
+
+THE SOFTWARE IS PROVIDED TO AUTHORIZED USERS FOR DEVELOPMENT PURPOSES ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT WARRANTIES OF ANY KIND, TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW.
+
+THE OWNER DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, ACCURACY, RELIABILITY, AND ERROR-FREE OPERATION.
+
+## 13. Limitation of Liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE OWNER SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES ARISING FROM ACCESS TO OR USE OF THE SOFTWARE.
+
+Nothing in this section excludes liability that cannot lawfully be excluded or limited.
+
+## 14. Governing Law and Jurisdiction
+
+This License and any dispute arising from it shall be governed by the laws of Czech Republic, without regard to its conflict-of-law rules.
+
+The courts of Brno shall have jurisdiction over disputes arising from this License, except where applicable law requires otherwise.
+
+## 15. Severability
+
+If any provision of this License is held to be invalid, illegal, or unenforceable, the remaining provisions shall remain in effect to the maximum extent permitted by law.
+
+## 16. Entire Scope of Permission
+
+This License defines only the permission arising from access to the Software.
+
+A separate written employment agreement, contractor agreement, confidentiality agreement, contributor agreement, commercial license, or other agreement between the Owner and an Authorized User may grant additional rights or impose additional obligations.
+
+Where such a written agreement expressly conflicts with this License, the expressly negotiated written agreement shall control to the extent of that conflict.
+
+---
+
+**PROPRIETARY AND CONFIDENTIAL**
+
+Unauthorized copying, disclosure, distribution, modification, publication, commercial exploitation, or other use of this Software is prohibited.
+
+For licensing or other permissions, contact:
+
+Lukas (Viridis) Dubsik
+[luke@bubaci.net](mailto:luke@bubaci.net)

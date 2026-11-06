@@ -1,0 +1,172 @@
+{
+  "catalogue_version": "1.0",
+  "references": [
+    {
+      "reference_id": "demo-reference-v1",
+      "category": "synthetic",
+      "assembly": null,
+      "contigs": [
+        {
+          "accession": "demo_contig",
+          "label": "demo_contig",
+          "length": 10000
+        }
+      ],
+      "provenance": null
+    },
+    {
+      "reference_id": "grch38-p14-primary-v1",
+      "category": "reference_metadata",
+      "assembly": "GCF_000001405.40",
+      "contigs": [
+        {
+          "accession": "NC_000001.11",
+          "label": "chr1",
+          "length": 248956422
+        },
+        {
+          "accession": "NC_000002.12",
+          "label": "chr2",
+          "length": 242193529
+        },
+        {
+          "accession": "NC_000003.12",
+          "label": "chr3",
+          "length": 198295559
+        },
+        {
+          "accession": "NC_000004.12",
+          "label": "chr4",
+          "length": 190214555
+        },
+        {
+          "accession": "NC_000005.10",
+          "label": "chr5",
+          "length": 181538259
+        },
+        {
+          "accession": "NC_000006.12",
+          "label": "chr6",
+          "length": 170805979
+        },
+        {
+          "accession": "NC_000007.14",
+          "label": "chr7",
+          "length": 159345973
+        },
+        {
+          "accession": "NC_000008.11",
+          "label": "chr8",
+          "length": 145138636
+        },
+        {
+          "accession": "NC_000009.12",
+          "label": "chr9",
+          "length": 138394717
+        },
+        {
+          "accession": "NC_000010.11",
+          "label": "chr10",
+          "length": 133797422
+        },
+        {
+          "accession": "NC_000011.10",
+          "label": "chr11",
+          "length": 135086622
+        },
+        {
+          "accession": "NC_000012.12",
+          "label": "chr12",
+          "length": 133275309
+        },
+        {
+          "accession": "NC_000013.11",
+          "label": "chr13",
+          "length": 114364328
+        },
+        {
+          "accession": "NC_000014.9",
+          "label": "chr14",
+          "length": 107043718
+        },
+        {
+          "accession": "NC_000015.10",
+          "label": "chr15",
+          "length": 101991189
+        },
+        {
+          "accession": "NC_000016.10",
+          "label": "chr16",
+          "length": 90338345
+        },
+        {
+          "accession": "NC_000017.11",
+          "label": "chr17",
+          "length": 83257441
+        },
+        {
+          "accession": "NC_000018.10",
+          "label": "chr18",
+          "length": 80373285
+        },
+        {
+          "accession": "NC_000019.10",
+          "label": "chr19",
+          "length": 58617616
+        },
+        {
+          "accession": "NC_000020.11",
+          "label": "chr20",
+          "length": 64444167
+        },
+        {
+          "accession": "NC_000021.9",
+          "label": "chr21",
+          "length": 46709983
+        },
+        {
+          "accession": "NC_000022.11",
+          "label": "chr22",
+          "length": 50818468
+        },
+        {
+          "accession": "NC_000023.11",
+          "label": "chrX",
+          "length": 156040895
+        },
+        {
+          "accession": "NC_000024.10",
+          "label": "chrY",
+          "length": 57227415
+        }
+      ],
+      "provenance": {
+        "source_url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_assembly_report.txt",
+        "retrieved_on": "2026-11-01",
+        "sha256": "04e40091e427dae4f0c7dcc1b67792b8d4d5413903ea6b1d171840664e2da989",
+        "selection": "Sequence-Role=assembled-molecule AND Assigned-Molecule-Location/Type=Chromosome",
+        "sequence_content_verified": false
+      }
+    }
+  ],
+  "profiles": [
+    {
+      "profile_id": "demo-spcas9-ngg-v1",
+      "reference_ids": [
+        "demo-reference-v1"
+      ],
+      "nuclease": "SpCas9",
+      "pam": "NGG",
+      "intent": "pre_experiment"
+    },
+    {
+      "profile_id": "spcas9-ngg-preexperiment-v1",
+      "reference_ids": [
+        "grch38-p14-primary-v1"
+      ],
+      "nuclease": "SpCas9",
+      "pam": "NGG",
+      "intent": "pre_experiment"
+    }
+  ]
+}

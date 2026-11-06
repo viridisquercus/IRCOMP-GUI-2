@@ -1,0 +1,25 @@
+{
+  "kind": "request",
+  "format_version": "1.0",
+  "study_id": "00000000-0000-4000-8000-000000000001",
+  "request_id": "00000000-0000-4000-8000-000000000002",
+  "title": "Synthetic example — no scientific result",
+  "revision": {
+    "revision_id": "00000000-0000-4000-8000-000000000003",
+    "reference_id": "demo-reference-v1",
+    "profile_id": "demo-spcas9-ngg-v1",
+    "coordinate_system": "0-based-half-open",
+    "targets": [
+      {
+        "target_id": "00000000-0000-4000-8000-000000000004",
+        "contig": "demo_contig",
+        "start": 100,
+        "end": 200,
+        "strand": "+"
+      }
+    ]
+  },
+  "target_labels": {
+    "00000000-0000-4000-8000-000000000004": "Demo target A"
+  }
+}

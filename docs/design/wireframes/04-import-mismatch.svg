@@ -1,0 +1,41 @@
+<!--
+ Name: Lukas (Viridis) Dubsik
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="960" viewBox="0 0 1440 960">
+<title>Check evidence before attaching</title>
+<rect x="0" y="0" width="1440" height="960" rx="0" fill="#f3f6f6" stroke="#d8e2e4"/>
+<rect x="0" y="0" width="1440" height="76" rx="0" fill="#18333b" stroke="#d8e2e4"/>
+<text x="32" y="44" font-family="DejaVu Sans,sans-serif" font-size="21" font-weight="700" fill="#ffffff">IRCOMP / Study workspace</text>
+<text x="600" y="43" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" fill="#ffffff">Study: Review demonstration  ▾</text>
+<text x="1030" y="42" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#c9e6e2">Saved · request r3</text>
+<rect x="1230" y="17" width="178" height="42" rx="10" fill="#126b65" stroke="#d8e2e4"/>
+<text x="1246" y="43" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="700" fill="#ffffff">Save study</text>
+<rect x="32" y="91" width="122" height="42" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="52" y="118" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" fill="#18333b">Prepare</text>
+<rect x="170" y="91" width="122" height="42" rx="10" fill="#126b65" stroke="#d8e2e4"/>
+<text x="190" y="118" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" fill="#ffffff">Review</text>
+<rect x="308" y="91" width="122" height="42" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="328" y="118" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" fill="#18333b">Export</text>
+<text x="1000" y="115" font-family="DejaVu Sans,sans-serif" font-size="13" font-weight="400" fill="#526b72">DESIGN ONLY · SYNTHETIC EXAMPLE</text>
+<text x="32" y="178" font-family="DejaVu Sans,sans-serif" font-size="27" font-weight="700" fill="#18333b">Check evidence before attaching</text>
+<text x="32" y="206" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">Current study remains unchanged until a compatible bundle is attached.</text>
+<text x="32" y="934" font-family="DejaVu Sans,sans-serif" font-size="13" font-weight="400" fill="#526b72">S4 / 2026-11-01 · Initial design — primary-research validation pending</text>
+<rect x="160" y="238" width="1120" height="640" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="192" y="290" font-family="DejaVu Sans,sans-serif" font-size="22" font-weight="700" fill="#18333b">Import preview / example-mismatch.json</text>
+<text x="192" y="323" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">Synthetic evidence · format preview-v1 · bundle example-002</text>
+<rect x="192" y="358" width="1056" height="82" rx="10" fill="#fff0ec" stroke="#d8e2e4"/>
+<text x="212" y="394" font-family="DejaVu Sans,sans-serif" font-size="19" font-weight="700" fill="#a32d25">Cannot attach: reference identity differs</text>
+<text x="212" y="422" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#a32d25">Changing the display label does not establish compatibility.</text>
+<text x="212" y="498" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="700" fill="#526b72">EXPECTED BY REQUEST r3</text>
+<text x="752" y="498" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="700" fill="#526b72">DECLARED BY BUNDLE</text>
+<text x="212" y="553" font-family="DejaVu Sans,sans-serif" font-size="24" font-weight="700" fill="#18333b">demo-reference-v1</text>
+<text x="752" y="553" font-family="DejaVu Sans,sans-serif" font-size="24" font-weight="700" fill="#18333b">demo-reference-v2</text>
+<text x="212" y="614" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">Choose a bundle for the current request, or open the exact request context that produced this evidence. The original file is</text>
+<text x="212" y="638" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">not modified.</text>
+<rect x="192" y="748" width="224" height="42" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="208" y="774" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="700" fill="#18333b">Choose another file</text>
+<rect x="436" y="748" width="130" height="42" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="452" y="774" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="700" fill="#18333b">Cancel</text>
+<rect x="1004" y="748" width="244" height="42" rx="10" fill="#e4e9eb" stroke="#d8e2e4"/>
+<text x="1020" y="774" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="700" fill="#526b72">Attach unavailable</text>
+</svg>

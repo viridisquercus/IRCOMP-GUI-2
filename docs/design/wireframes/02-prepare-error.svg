@@ -1,0 +1,77 @@
+<!--
+ Name: Lukas (Viridis) Dubsik
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="960" viewBox="0 0 1440 960">
+<title>Prepare a request</title>
+<rect x="0" y="0" width="1440" height="960" rx="0" fill="#f3f6f6" stroke="#d8e2e4"/>
+<rect x="0" y="0" width="1440" height="76" rx="0" fill="#18333b" stroke="#d8e2e4"/>
+<text x="32" y="44" font-family="DejaVu Sans,sans-serif" font-size="21" font-weight="700" fill="#ffffff">IRCOMP / Study workspace</text>
+<text x="600" y="43" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" fill="#ffffff">Study: Review demonstration  ▾</text>
+<text x="1030" y="42" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#c9e6e2">Unsaved draft · r3</text>
+<rect x="1230" y="17" width="178" height="42" rx="10" fill="#126b65" stroke="#d8e2e4"/>
+<text x="1246" y="43" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="700" fill="#ffffff">Save study</text>
+<rect x="32" y="91" width="122" height="42" rx="10" fill="#126b65" stroke="#d8e2e4"/>
+<text x="52" y="118" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" fill="#ffffff">Prepare</text>
+<rect x="170" y="91" width="122" height="42" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="190" y="118" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" fill="#18333b">Review</text>
+<rect x="308" y="91" width="122" height="42" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="328" y="118" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" fill="#18333b">Export</text>
+<text x="1000" y="115" font-family="DejaVu Sans,sans-serif" font-size="13" font-weight="400" fill="#526b72">DESIGN ONLY · SYNTHETIC EXAMPLE</text>
+<text x="32" y="178" font-family="DejaVu Sans,sans-serif" font-size="27" font-weight="700" fill="#18333b">Prepare a request</text>
+<text x="32" y="206" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">Request r3 · demo-reference-v1 · Example profile · No scientific checks performed</text>
+<text x="32" y="934" font-family="DejaVu Sans,sans-serif" font-size="13" font-weight="400" fill="#526b72">S4 / 2026-11-01 · Initial design — primary-research validation pending</text>
+<rect x="32" y="230" width="270" height="650" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<rect x="322" y="230" width="680" height="650" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<rect x="1022" y="230" width="386" height="650" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="52" y="273" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" fill="#18333b">Targets</text>
+<rect x="52" y="296" width="230" height="42" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="68" y="322" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="700" fill="#18333b">+ Add target</text>
+<rect x="48" y="359" width="238" height="94" rx="10" fill="#e7f3f0" stroke="#d8e2e4"/>
+<text x="64" y="392" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="700" fill="#18333b">Region A</text>
+<text x="64" y="422" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#526b72">demo_contig: 100-240</text>
+<text x="64" y="500" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="700" fill="#18333b">Region B</text>
+<text x="64" y="530" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#526b72">demo_contig: 400-560</text>
+<text x="52" y="614" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#126b65">Remove selected target</text>
+<text x="52" y="751" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">2 accepted targets.</text>
+<text x="52" y="775" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">Selecting a target opens its</text>
+<text x="52" y="799" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">editor without changing</text>
+<text x="52" y="823" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">request identity.</text>
+<text x="346" y="273" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" fill="#18333b">Region A</text>
+<text x="346" y="299" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#526b72">Draft edits</text>
+<text x="346" y="346" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#526b72">Target label</text>
+<rect x="346" y="359" width="630" height="47" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="359" y="388" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" fill="#18333b">Region A</text>
+<text x="346" y="444" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#526b72">Contig</text>
+<rect x="346" y="457" width="630" height="47" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="359" y="486" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" fill="#18333b">demo_contig  ▾</text>
+<text x="346" y="546" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#526b72">Start · 0-based</text>
+<rect x="346" y="559" width="296" height="47" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="359" y="588" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" fill="#18333b">100</text>
+<text x="676" y="546" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#526b72">End · exclusive</text>
+<rect x="676" y="559" width="300" height="47" rx="10" fill="#fff5f3" stroke="#b44035"/>
+<text x="689" y="588" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" fill="#18333b">80</text>
+<text x="676" y="628" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#a32d25">End must be greater than 100.</text>
+<text x="346" y="680" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#526b72">Strand</text>
+<rect x="346" y="693" width="296" height="47" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="359" y="722" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="400" fill="#18333b">Unspecified  ▾</text>
+<text x="676" y="691" font-family="DejaVu Sans,sans-serif" font-size="14" font-weight="400" fill="#526b72">Coordinate convention</text>
+<text x="676" y="721" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">0-based, end-exclusive. No</text>
+<text x="676" y="745" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">automatic conversion.</text>
+<rect x="346" y="797" width="174" height="42" rx="10" fill="#e4e9eb" stroke="#d8e2e4"/>
+<text x="362" y="823" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="700" fill="#526b72">Apply target</text>
+<rect x="536" y="797" width="170" height="42" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="552" y="823" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="700" fill="#18333b">Discard edits</text>
+<text x="1044" y="273" font-family="DejaVu Sans,sans-serif" font-size="20" font-weight="700" fill="#18333b">Input checks</text>
+<rect x="1042" y="301" width="344" height="123" rx="10" fill="#fff0ec" stroke="#d8e2e4"/>
+<text x="1058" y="333" font-family="DejaVu Sans,sans-serif" font-size="16" font-weight="700" fill="#a32d25">1 blocking problem</text>
+<text x="1058" y="369" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">Region A → End. Correct the interval</text>
+<text x="1058" y="393" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">before applying this target.</text>
+<rect x="1044" y="448" width="200" height="42" rx="10" fill="#ffffff" stroke="#d8e2e4"/>
+<text x="1060" y="474" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="700" fill="#18333b">Focus End</text>
+<text x="1044" y="549" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="700" fill="#18333b">Not checked</text>
+<text x="1044" y="583" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">Biological suitability, external reference</text>
+<text x="1044" y="607" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">contents and scientific model validity.</text>
+<text x="1044" y="702" font-family="DejaVu Sans,sans-serif" font-size="17" font-weight="700" fill="#18333b">Drafts can be saved</text>
+<text x="1044" y="736" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">Saving work does not make an invalid</text>
+<text x="1044" y="760" font-family="DejaVu Sans,sans-serif" font-size="15" font-weight="400" fill="#526b72">request ready for analysis.</text>
+</svg>

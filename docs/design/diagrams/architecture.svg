@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="900" viewBox="0 0 1560 900">
+<!-- Name: Lukas (Viridis) Dubsik -->
+<rect width="100%" height="100%" fill="white"/>
+<rect x="40" y="30" width="600" height="140" rx="8" fill="#eef6f8" stroke="#405a64" stroke-width="2"/>
+<text x="340.0" y="82.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">React views</text>
+<text x="340.0" y="118.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">Prepare / Review / Export</text>
+<rect x="920" y="30" width="600" height="140" rx="8" fill="#eef6f8" stroke="#405a64" stroke-width="2"/>
+<text x="1220.0" y="82.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">Shared reducer and selectors</text>
+<text x="1220.0" y="118.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">Accepted data, drafts, navigation</text>
+<rect x="40" y="290" width="600" height="140" rx="8" fill="#eef6f8" stroke="#405a64" stroke-width="2"/>
+<text x="340.0" y="360.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">Controller and JSON fetch</text>
+<rect x="40" y="550" width="600" height="130" rx="8" fill="#eef6f8" stroke="#405a64" stroke-width="2"/>
+<text x="340.0" y="615.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">FastAPI routes</text>
+<rect x="40" y="740" width="600" height="120" rx="8" fill="#eef6f8" stroke="#405a64" stroke-width="2"/>
+<text x="340.0" y="782.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">Application services</text>
+<text x="340.0" y="818.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">Workspace / Prepare / Review / Export</text>
+<rect x="920" y="550" width="600" height="130" rx="8" fill="#eef6f8" stroke="#405a64" stroke-width="2"/>
+<text x="1220.0" y="615.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">Domain data and rules</text>
+<rect x="920" y="740" width="600" height="120" rx="8" fill="#eef6f8" stroke="#405a64" stroke-width="2"/>
+<text x="1220.0" y="782.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">Repository / exchange protocols</text>
+<text x="1220.0" y="818.0" font-family="DejaVu Sans,sans-serif" font-size="27" text-anchor="middle" dominant-baseline="central" fill="#18333b">SQLite and JSON adapters</text>
+<path d="M340,170 L340,290" stroke="#405a64" stroke-width="3"/>
+<polygon points="340.0,290.0 333.9,277.4 346.1,277.4" fill="#405a64"/>
+<path d="M340,430 L340,550" stroke="#405a64" stroke-width="3"/>
+<polygon points="340.0,550.0 333.9,537.4 346.1,537.4" fill="#405a64"/>
+<path d="M640,360 L1220,360" stroke="#405a64" stroke-width="3"/>
+<polygon points="1220.0,360.0 1207.4,366.1 1207.4,353.9" fill="#405a64"/>
+<path d="M1220,360 L1220,170" stroke="#405a64" stroke-width="3"/>
+<polygon points="1220.0,170.0 1226.1,182.6 1213.9,182.6" fill="#405a64"/>
+<path d="M920,100 L640,100" stroke="#405a64" stroke-width="3"/>
+<polygon points="640.0,100.0 652.6,93.9 652.6,106.1" fill="#405a64"/>
+<path d="M340,680 L340,740" stroke="#405a64" stroke-width="3"/>
+<polygon points="340.0,740.0 333.9,727.4 346.1,727.4" fill="#405a64"/>
+<path d="M640,800 L920,800" stroke="#405a64" stroke-width="3"/>
+<polygon points="920.0,800.0 907.4,806.1 907.4,793.9" fill="#405a64"/>
+<path d="M1220,740 L1220,680" stroke="#405a64" stroke-width="3"/>
+<polygon points="1220.0,680.0 1226.1,692.6 1213.9,692.6" fill="#405a64"/>
+<text x="780" y="470" font-family="DejaVu Sans,sans-serif" font-size="23" text-anchor="middle" fill="#18333b">HTTP</text>
+<text x="790" y="875" font-family="DejaVu Sans,sans-serif" font-size="23" text-anchor="middle" fill="#18333b">Compiler integration is future work</text>
+</svg>

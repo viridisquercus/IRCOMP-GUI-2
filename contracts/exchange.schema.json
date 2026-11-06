@@ -1,0 +1,590 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://viridisquercus.github.io/IRCOMP-GUI/contracts/exchange-1.0.schema.json",
+  "title": "IRCOMP-GUI local exchange 1.0",
+  "description": "Local GUI exchange; not the IRCOMP compiler contract. Semantic rules also apply.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/request"
+    },
+    {
+      "$ref": "#/$defs/evidence"
+    },
+    {
+      "$ref": "#/$defs/review"
+    }
+  ],
+  "$defs": {
+    "target": {
+      "type": "object",
+      "properties": {
+        "target_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "contig": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "strand": {
+          "enum": [
+            "+",
+            "-",
+            "."
+          ]
+        }
+      },
+      "required": [
+        "target_id",
+        "contig",
+        "start",
+        "end",
+        "strand"
+      ],
+      "additionalProperties": false
+    },
+    "revision": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "reference_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "profile_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "coordinate_system": {
+          "const": "0-based-half-open"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/target"
+          },
+          "minItems": 0,
+          "maxItems": 50
+        }
+      },
+      "required": [
+        "revision_id",
+        "reference_id",
+        "profile_id",
+        "coordinate_system",
+        "targets"
+      ],
+      "additionalProperties": false
+    },
+    "request": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "request"
+        },
+        "format_version": {
+          "const": "1.0"
+        },
+        "study_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "request_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "revision": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/revision"
+            },
+            {
+              "properties": {
+                "targets": {
+                  "minItems": 1
+                }
+              }
+            }
+          ]
+        },
+        "target_labels": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": "\\S"
+          },
+          "maxProperties": 50
+        }
+      },
+      "required": [
+        "kind",
+        "format_version",
+        "study_id",
+        "request_id",
+        "title",
+        "revision",
+        "target_labels"
+      ],
+      "additionalProperties": false
+    },
+    "metric": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "scale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "direction": {
+          "enum": [
+            "higher",
+            "lower",
+            "not_ordered",
+            null
+          ]
+        },
+        "availability": {
+          "enum": [
+            "present",
+            "not_supplied",
+            "unsupported",
+            "failed",
+            "unknown"
+          ]
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "model",
+        "unit",
+        "scale",
+        "direction",
+        "availability",
+        "value"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "availability": {
+                "const": "present"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "number"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "candidate_key": {
+      "type": "object",
+      "properties": {
+        "bundle_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "candidate_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        }
+      },
+      "required": [
+        "bundle_id",
+        "candidate_id"
+      ],
+      "additionalProperties": false
+    },
+    "candidate": {
+      "type": "object",
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$"
+        },
+        "target_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/metric"
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "raw_record": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "target_id",
+        "label",
+        "metrics",
+        "raw_record"
+      ],
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "evidence"
+        },
+        "format_version": {
+          "const": "1.0"
+        },
+        "bundle_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "request_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "context": {
+          "$ref": "#/$defs/revision"
+        },
+        "category": {
+          "enum": [
+            "synthetic",
+            "computational_prediction"
+          ]
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "pattern": "\\S"
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "pattern": "\\S"
+            },
+            "uri": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 2000
+            }
+          },
+          "required": [
+            "name",
+            "version",
+            "uri"
+          ],
+          "additionalProperties": false
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/candidate"
+          },
+          "minItems": 0,
+          "maxItems": 200
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "uri": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            },
+            "required": [
+              "uri",
+              "description"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "kind",
+        "format_version",
+        "bundle_id",
+        "request_id",
+        "context",
+        "category",
+        "source",
+        "candidates",
+        "dependencies"
+      ],
+      "additionalProperties": false
+    },
+    "membership": {
+      "type": "object",
+      "properties": {
+        "candidate": {
+          "$ref": "#/$defs/candidate_key"
+        },
+        "disposition": {
+          "enum": [
+            "undecided",
+            "include_for_review",
+            "exclude",
+            "needs_clarification"
+          ]
+        },
+        "rationale": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/candidate_key"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "candidate",
+        "disposition",
+        "rationale",
+        "evidence_refs"
+      ],
+      "additionalProperties": false
+    },
+    "collection": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "memberships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/membership"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "collection_id",
+        "revision_id",
+        "name",
+        "memberships"
+      ],
+      "additionalProperties": false
+    },
+    "raw_file": {
+      "type": "object",
+      "properties": {
+        "bundle_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "content_base64": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 1398104,
+          "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+        }
+      },
+      "required": [
+        "bundle_id",
+        "sha256",
+        "content_base64"
+      ],
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "review"
+        },
+        "format_version": {
+          "const": "1.0"
+        },
+        "request": {
+          "$ref": "#/$defs/request"
+        },
+        "source_saved_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "collections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/collection"
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "evidence_files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/raw_file"
+          },
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "review_status": {
+          "enum": [
+            "draft",
+            "reviewed"
+          ]
+        },
+        "unresolved_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1020
+        }
+      },
+      "required": [
+        "kind",
+        "format_version",
+        "request",
+        "source_saved_version",
+        "collections",
+        "evidence_files",
+        "review_status",
+        "unresolved_count"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "unresolved_count": {
+                "const": 0
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "review_status": {
+                "const": "reviewed"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "review_status": {
+                "const": "draft"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

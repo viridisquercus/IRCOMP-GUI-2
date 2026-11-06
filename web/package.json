@@ -1,0 +1,33 @@
+{
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.2.0",
+    "cypress": "15.21.1",
+    "prettier": "3.9.10",
+    "typescript": "7.0.2",
+    "vite": "8.3.5"
+  },
+  "name": "ircomp-gui-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit && tsc --project cypress/tsconfig.json",
+    "format": "prettier --write src cypress scripts *.ts *.json index.html",
+    "format:check": "prettier --check src cypress scripts *.ts *.json index.html",
+    "check": "npm run typecheck && npm run format:check",
+    "test:e2e": "node scripts/test.mjs",
+    "test:e2e:open": "node scripts/test.mjs --open"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
