@@ -1,6 +1,5 @@
 # File formats
 ### Author: Lukas (Viridis) Dubsik
-#### Date: 6.11.2026
 
 The application reads and writes UTF-8 JSON. The current version of the format is `1.0`. It only describes the data of the GUI, the IRCOMP specification will be a separate thing. The schema is in [exchange.schema.json](exchange.schema.json).
 

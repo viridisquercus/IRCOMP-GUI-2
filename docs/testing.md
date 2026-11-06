@@ -1,6 +1,5 @@
 # Browser tests
 ### Author: Lukas (Viridis) Dubsik
-#### Date: 6.11.2026
 
 ## Running the tests
 From the root of the repository, after `make install`, run:

@@ -1,6 +1,5 @@
 # Implementation details
 ### Author: Lukas (Viridis) Dubsik
-#### Date: 6.11.2026
 
 The application is split into the Python model and the React interface. Prepare and Review both work with the same study, so when a target or a decision changes, all the lists, details and counters using it change too. Export always takes the saved copy of the study, not the open one.
 

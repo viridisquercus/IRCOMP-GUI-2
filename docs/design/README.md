@@ -1,6 +1,5 @@
 # Interface design
 ### Author: Lukas (Viridis) Dubsik
-#### Date: 6.11.2026
 
 The interface has three views over one study. Prepare edits the targets and their reference, Review puts the imported evidence next to the editor of the decision, and Export shows what will be in the downloaded file.
 
@@ -23,5 +22,3 @@ The [navigation](diagrams/navigation.svg) and [architecture](diagrams/architectu
 The study, its revision and whether it is saved stay visible in every view. Everything is edited directly in the page. An error says what is wrong and in which field, and the colours of the states always come with a text too (so they work without colours as well). On a narrow screen the panels go under each other.
 
 What you type is kept apart from the applied values, so an unfinished interval never replaces a valid target. Older evidence keeps its revision, and scores from different tools are never merged into one.
-
-The [interview plan](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29425665) covers entering intervals, decisions about candidates and collections. Whether the interface is actually easy to use can only be found out with real users, the tests can't tell. How the data flow through the code is in [implementation details](../architecture.md).
