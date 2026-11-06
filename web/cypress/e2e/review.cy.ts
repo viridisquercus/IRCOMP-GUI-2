@@ -8,8 +8,8 @@
 
 /**
  * AI DISCLAIMER
- * 
- * These tests were generated using AI to test the 
+ *
+ * These tests were generated using AI to test the
  * application funcionalitya and refined afterwards
  * to suit the requested needs of testing.
  */
