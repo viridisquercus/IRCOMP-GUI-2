@@ -162,7 +162,7 @@ class ExportService:
         if not collection_ids or len(selected) != len(collection_ids) or not belongs:
             raise DomainError(
                 "DANGLING_REFERENCE",
-                "Select existing collections belonging to the selected revision.",
+                "Choose collections of this revision.",
             )
 
         evidence = _used_evidence(saved.study, revision_id, selected)
@@ -326,6 +326,6 @@ class ExportService:
         with self.workspace.lock:
             if export_id not in self.files:
                 raise DomainError(
-                    "PREVIEW_EXPIRED", "Export preview expired. Generate a new preview."
+                    "PREVIEW_EXPIRED", "The export preview is gone, preview it again."
                 )
             return self.files[export_id]

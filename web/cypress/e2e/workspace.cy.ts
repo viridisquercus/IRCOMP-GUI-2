@@ -24,7 +24,7 @@ describe("Preparing and saving a study", () => {
     cy.get("#target-start").clear().type("200");
     cy.get("#target-end").clear().type("100");
     cy.contains("button", /^Apply target$/).should("be.disabled");
-    cy.contains("button", "Require 0 ≤ start < end").click();
+    cy.contains("button", "Start has to be smaller than end").click();
     cy.get("#target-end").should("have.focus");
     readWorkspace().then((workspace) => {
       expect(workspace.study.revisions.at(-1)?.targets).to.have.length(0);

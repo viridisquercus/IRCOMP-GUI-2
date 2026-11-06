@@ -156,7 +156,7 @@ def unique(values: list[str], subject: str) -> None:
         SCHEMA_INVALID if some ID is there twice
     """
     if len(values) != len(set(values)):
-        raise DomainError("SCHEMA_INVALID", f"Duplicate {subject} identity.")
+        raise DomainError("SCHEMA_INVALID", f"The same {subject} ID is there twice.")
 
 
 # ---------------------------------------------------------------------------
@@ -198,14 +198,15 @@ def validate_revision(
         if target.contig not in lengths:
             raise DomainError(
                 "INTERVAL_INVALID",
-                "Use an exact supported contig accession.",
+                "Choose one of the contigs of this reference.",
                 pointer + "/contig",
             )
         length = lengths[target.contig]
         if not 0 <= target.start < target.end <= length:
             raise DomainError(
                 "INTERVAL_INVALID",
-                f"Require 0 ≤ start < end ≤ {length:,} (end-exclusive).",
+                f"Start has to be smaller than end, and end at most {length:,} "
+                "(end is not included).",
                 pointer + "/end",
             )
 
@@ -235,7 +236,7 @@ def parse_target(draft: TargetDraft, target_id: str) -> Target:
         if not re.fullmatch(r"[0-9]+", value) or int(value) > MAX_SAFE_INTEGER:
             raise DomainError(
                 "INTERVAL_INVALID",
-                "Enter a nonnegative whole number within the supported range.",
+                "Enter a whole number (0 or more).",
                 "/target/" + name,
             )
 
@@ -314,7 +315,7 @@ def validate_bundle(bundle: EvidenceBundle, catalogue: Catalogue) -> None:
     ):
         raise DomainError(
             "CONTEXT_MISMATCH",
-            "A demo reference cannot be declared real computational evidence.",
+            "Evidence for the demo reference can only be synthetic.",
         )
 
     unique([candidate.candidate_id for candidate in bundle.candidates], "candidate")
@@ -324,14 +325,15 @@ def validate_bundle(bundle: EvidenceBundle, catalogue: Catalogue) -> None:
         if candidate.target_id not in targets:
             raise DomainError(
                 "DANGLING_REFERENCE",
-                "Candidate refers to a target outside its declared context.",
+                "A candidate refers to a target which is not in the file's revision.",
             )
         # Value has to be there exactly when the metric says it is present
         for metric in candidate.metrics:
             present = metric.availability == "present"
             if present != (metric.value is not None):
                 raise DomainError(
-                    "SCHEMA_INVALID", "Metric availability and value disagree."
+                    "SCHEMA_INVALID",
+                    "A metric has a value but says it is missing (or the reverse).",
                 )
 
 
@@ -366,7 +368,7 @@ def resolve_candidate(study: Study, key: CandidateKey, revision_id: str) -> None
 
     raise DomainError(
         "DANGLING_REFERENCE",
-        "Candidate is missing or belongs to another request revision.",
+        "The candidate is not in the evidence of this revision.",
     )
 
 
@@ -413,7 +415,7 @@ def _check_target_labels(study: Study) -> None:
     if set(study.target_labels) != target_ids:
         raise DomainError(
             "DANGLING_REFERENCE",
-            "Target labels must cover retained target identities exactly.",
+            "Every target needs exactly one label.",
         )
 
 
@@ -427,7 +429,7 @@ def _check_evidence(study: Study, catalogue: Catalogue) -> None:
         ):
             raise DomainError(
                 "CONTEXT_MISMATCH",
-                "Evidence does not match its exact retained request context.",
+                "Stored evidence doesn't match its revision.",
             )
 
 
@@ -465,7 +467,7 @@ def _check_drafts(study: Study) -> None:
         active_ids = {target.target_id for target in active_revision(study).targets}
         if target_draft.target_id not in active_ids:
             raise DomainError(
-                "DANGLING_REFERENCE", "Target draft refers to a missing active target."
+                "DANGLING_REFERENCE", "The target being edited doesn't exist anymore."
             )
 
     # Decision draft needs an existing membership to belong to
@@ -482,7 +484,8 @@ def _check_drafts(study: Study) -> None:
                 break
     if collection is None or not member_found:
         raise DomainError(
-            "DANGLING_REFERENCE", "Decision draft refers to a missing membership."
+            "DANGLING_REFERENCE",
+            "The decision being edited is for a candidate not in the collection.",
         )
 
     for key in decision.evidence_refs:

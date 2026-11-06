@@ -1,37 +1,27 @@
 # Interface design
+### Author: Lukas (Viridis) Dubsik
+#### Date: 6.11.2026
 
-The interface uses three views over one study. Prepare edits targets and their
-reference context. Review places imported evidence beside the decision editor.
-Export shows what will be included in the downloaded file.
+The interface has three views over one study. Prepare edits the targets and their reference, Review puts the imported evidence next to the editor of the decision, and Export shows what will be in the downloaded file.
 
 ## Wireframes
 
-| File | Purpose |
-| --- | --- |
+| File | What it shows |
+|-|-|
 | [Prepare](wireframes/01-prepare.svg) | Target list, interval editor and checks |
-| [Prepare error](wireframes/02-prepare-error.svg) | Invalid input and field correction |
-| [Review](wireframes/03-review.svg) | Source evidence and the separate decision editor |
-| [Import mismatch](wireframes/04-import-mismatch.svg) | Expected and received request context |
-| [Export](wireframes/05-export.svg) | Saved request, decisions and unfinished work |
+| [Prepare error](wireframes/02-prepare-error.svg) | Wrong input and how the field is pointed out |
+| [Review](wireframes/03-review.svg) | The evidence and the decision editor next to it |
+| [Import mismatch](wireframes/04-import-mismatch.svg) | Expected and received request of an evidence file |
+| [Export](wireframes/05-export.svg) | Saved request, decisions and what is still unfinished |
 
-These files show the initial design, not captures of the running application.
-The examples are synthetic. SVG files can be edited directly in a text or vector
-editor.
+These are the first drafts of the design, not screenshots of the finished application (some texts changed since). The data in them are made up. The SVGs can be edited in any text or vector editor.
 
-Editable [navigation](diagrams/navigation.svg) and
-[architecture](diagrams/architecture.svg) diagrams describe the data flow.
+The [navigation](diagrams/navigation.svg) and [architecture](diagrams/architecture.svg) diagrams show how the data go through the application.
 
-## Working with input
+## Working with the input
 
-The study context and save status remain visible between views. Editing is done
-inside the page. An error names the problem and the relevant input; status colours
-also have text. On a narrow screen, the panels are placed below each other.
+The study, its revision and whether it is saved stay visible in every view. Everything is edited directly in the page. An error says what is wrong and in which field, and the colours of the states always come with a text too (so they work without colours as well). On a narrow screen the panels go under each other.
 
-Typed text is kept apart from accepted values, so an unfinished interval does not
-replace a valid target. Historical evidence keeps its request revision. Scores
-from different sources are not combined into one score.
+What you type is kept apart from the applied values, so an unfinished interval never replaces a valid target. Older evidence keeps its revision, and scores from different tools are never merged into one.
 
-The [interview plan](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29425665)
-covers interval entry, candidate decisions and collections.
-Engineering checks alone do not establish usability. The data flow is described
-in [implementation details](../architecture.md).
+The [interview plan](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29425665) covers entering intervals, decisions about candidates and collections. Whether the interface is actually easy to use can only be found out with real users, the tests can't tell. How the data flow through the code is in [implementation details](../architecture.md).

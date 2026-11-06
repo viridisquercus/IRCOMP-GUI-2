@@ -1,24 +1,36 @@
-# IRCOMP-GUI
+# IRCOMP-GUI: preparing CRISPR requests and reviewing their results
+### Author: Lukas (Viridis) Dubsik
+#### Date: 6.11.2026
+#### Version: 0.1
 
-### Name: Lukas (Viridis) Dubsik
 
-## Overview
+## Table of Contents
+- [IRCOMP-GUI: preparing CRISPR requests and reviewing their results](#ircomp-gui-preparing-crispr-requests-and-reviewing-their-results)
+  - [Introduction](#introduction)
+  - [Installation and execution](#installation-and-execution)
+  - [Using the application](#using-the-application)
+    - [Prepare](#prepare)
+    - [Review](#review)
+    - [Save and export](#save-and-export)
+  - [Implementation](#implementation)
+  - [Code checks](#code-checks)
+  - [Testing](#testing)
+  - [Known limitations](#known-limitations)
+  - [Source archive](#source-archive)
+  - [Libraries and sources](#libraries-and-sources)
 
-IRCOMP-GUI is a local application for preparing CRISPR analysis requests and
-reviewing imported results. It provides the initial GUI for IRCOMP. Python handles
-data and operations, with React and TypeScript for the interface.
 
-The application is divided into **Prepare**, **Review** and **Export**. Prepare
-sets the reference and interval targets. Review adds candidates to collections
-and stores decisions about them. Export writes a request or a review package
-from the saved study. No CRISPR computation is performed by this application.
+## Introduction
+IRCOMP-GUI is a local application for preparing CRISPR analysis requests and for going through the results that come back. It is the first GUI for **IRCOMP**, the part users actually see. The data and all the operations are in **Python** (FastAPI), the interface is **React** with **TypeScript**.
+
+The application has three views: **Prepare**, **Review** and **Export**. In Prepare you choose the reference and set the target intervals. In Review you import the evidence (candidates found by some tool), put candidates into collections and write down your decision about each of them. Export then writes either the request or the review package from the saved study.
+
+To be clear about it from the start - this application doesn't compute anything. There is no CRISPR search, no off-target scoring, nothing like that. It only prepares the input for IRCOMP and shows what comes out.
 
 ## Installation and execution
+Python 3.12 or newer and Node 20.19 or newer are needed. I've tested it with Python 3.14.6, Node 20.20.2 and npm 10.8.2 on Linux, other versions and systems weren't tried.
 
-Python 3.12 or newer and Node 20.19 or newer are required. The checked environment
-uses Python 3.14.6, Node 20.20.2 and npm 10.8.2 on Linux.
-
-From the repository root, run:
+From the root of the repository run:
 
 ```sh
 make install
@@ -26,12 +38,9 @@ make build
 make run
 ```
 
-This creates `.venv`, installs the Python package and downloads the web
-dependencies. The application is then available at
-[http://127.0.0.1:8000](http://127.0.0.1:8000). To select another port, use
-`.venv/bin/ircomp-gui --port 8001`.
+The first one creates `.venv`, installs the Python package and downloads the web dependencies. The second builds the web client. After `make run` the application is on [http://127.0.0.1:8000](http://127.0.0.1:8000). Another port can be chosen with `.venv/bin/ircomp-gui --port 8001`.
 
-The same installation can be done without Make:
+The same without Make:
 
 ```sh
 python3 -m venv .venv
@@ -42,121 +51,67 @@ npm --prefix web run build
 .venv/bin/ircomp-gui
 ```
 
-For frontend development, start the Python service on port 8000 and run
-`npm --prefix web run dev`. Vite starts on port 5173 and forwards API calls to
-Python. The HTTP documentation is at `/docs`, and the generated API schema is
-at `/openapi.json`.
+When working on the frontend, start the Python service on port 8000 and then `npm --prefix web run dev`. Vite runs on port 5173 and sends the API calls over to Python, so the page reloads on every change. FastAPI also generates the documentation of the HTTP interface, it is on `/docs` (and the schema on `/openapi.json`).
 
 ## Using the application
 
 ### Prepare
+The quickest way to try it is **Open sample request** and then **Open request**. The sample is made up and already has one target. Otherwise create a new study under **New / Open / Rename / Duplicate**.
 
-To try the application, press **Inspect sample request**, then **Open request**.
-The example is synthetic and already contains an interval target. Alternatively,
-create a study through **New / Open / Rename / Duplicate**.
+Click a target to edit it, or use **Add target** for a new one. The coordinates are 0-based and the end is not included, so start 100 and end 200 means 100 bases (same as in BED files). **Apply target** checks the input and changes the request. Changing the coordinates creates a new *revision* of the request, while changing only the label doesn't - the label is just for you.
 
-Select a target to edit it, or use **Add target** for a new one. Coordinates use
-zero-based, end-exclusive intervals: start 100 and end 200 describe 100 bases.
-**Apply target** checks the input and changes the request. An edit to coordinates
-creates a new request revision; changing the label alone keeps the same revision.
-
-**Check request** lists the local checks. The application checks known reference
-identifiers and chromosome lengths. It does not check a FASTA file or calculate
-biological suitability.
+**Check request** lists what is checked. Only the reference IDs and the chromosome lengths are checked here. Whether the FASTA file exists, or whether the target makes sense biologically, is not.
 
 ### Review
+Review shows the evidence of the selected revision. Import an evidence file, or try the example with **Try the example evidence**. The file is first only previewed and attached after you confirm it. A file made for a different request or revision is refused.
 
-The Review view displays evidence from the selected request revision. Import an
-evidence file or inspect the synthetic example. Check the preview before
-attaching it. A file with a different request or revision is refused.
-
-Select a candidate and add it to a collection. Its disposition, reason and
-supporting references are stored in that collection. The same candidate can
-belong to more than one collection, with a different decision in each one.
-Original scores stay unchanged. A score of zero is different from a value that
-was not supplied.
+Select a candidate and add it to a collection. The decision (disposition), its reason and the other candidates supporting it are stored in that collection. One candidate can be in more collections with a different decision in each of them. The imported scores never change. A score of 0 is a real value and is shown differently from a score that wasn't sent at all.
 
 ### Save and export
+**Apply** changes the open study, **Save study** writes it into SQLite, including any edits you haven't applied yet (so they aren't lost). **Undo** goes one change back. After a save there is nothing to undo.
 
-**Apply** changes the working study. **Save study** stores it in SQLite, together
-with any unapplied editor text. **Undo** restores one accepted unsaved change.
-After saving, the Undo copy is cleared.
-
-Export uses saved data. Select a request or review package, inspect the preview,
-then download the JSON file. Unfinished decisions produce a draft review package.
-The review package includes the original evidence bytes and their checksums.
-Unapplied editor text is kept for recovery but is excluded from export.
+Export only uses saved data. Choose the request or the review package, check the preview and download the JSON. If some decisions aren't finished, the review package is marked as a draft. The package contains the original evidence files together with their checksums. Unapplied edits are never exported.
 
 ## Implementation
+The Python code is in `src/ircomp_gui`:
 
-The Python code is under `src/ircomp_gui`. `domain` defines the data and checks,
-`application` handles operations, `adapters` reads and writes data, and `api`
-connects these functions to HTTP. The React components are under `web/src`.
-The reducer stores shared client state; visual components dispatch changes to it.
+| Package | Contents |
+|-|-|
+| `domain` | Data classes, catalogue of references, checks, limits (`constants.py`) |
+| `application` | Operations - editing, import, save, undo and export |
+| `adapters` | SQLite storage and reading of the JSON files |
+| `api` | HTTP routes and bodies of the requests |
 
-[Architecture](docs/architecture.md) describes the classes and API.
-[File formats](contracts/README.md) describes the JSON exchange.
-[Wireframes and diagrams](docs/design/README.md) describe the interface design.
-Future integration work is recorded in the
-[IRCOMP integration notes](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897).
+The React code is in `web/src`. There is one shared state (a reducer) and the views only dispatch changes to it, all the calls to Python go through `app/controller.ts`. Each view has its own stylesheet next to it, the shared styles are in `styles/base.css`.
+
+More is written in [Architecture](docs/architecture.md) (classes and API), [File formats](contracts/README.md) (the JSON exchange) and [Design](docs/design/README.md) (wireframes). The plans for connecting it to IRCOMP are in the [IRCOMP integration notes](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897).
 
 ## Code checks
-
-The runtime stays small, but code checks are kept strict. To install and run them:
+The application itself is small, but I kept the checks strict, it caught a lot of mistakes early. To install and run them:
 
 ```sh
 make install-dev
 make check
 ```
 
-This runs Ruff linting and formatting checks, strict Pyright, strict TypeScript
-and Prettier, including the Cypress source and test runner. Use `make format` to
-apply formatting. Python uses typed functions,
-four spaces and double quotes. TypeScript uses two spaces and double quotes.
-The configuration is in `pyproject.toml`, `web/tsconfig.json` and
-`web/.prettierrc.json`.
+This runs *Ruff* (lint and formatting), *Pyright* in strict mode, the TypeScript compiler and *Prettier* (also over the Cypress tests and the test runner). `make format` fixes the formatting. Python uses typed functions, NumPy docstrings, four spaces and double quotes, TypeScript two spaces and double quotes. The settings are in `pyproject.toml`, `web/tsconfig.json` and `web/.prettierrc.json`.
 
-## Browser tests
+## Testing
+After installation run `make test`. It builds the client, starts its own server and runs 11 Cypress scenarios against a temporary SQLite database, so your saved studies are never touched. Both the server and the database are removed at the end.
 
-Run `make test` after installation. It builds the client, starts a separate local
-server and runs 11 Cypress scenarios against a temporary SQLite database. Your
-saved studies are not used. The server and temporary database are removed when
-the run finishes.
+The tests go through editing, recovery of unapplied edits, Undo, imports, decisions in collections, downloading the review, and requests that fail or come back late. `npm --prefix web run test:e2e:open` opens the Cypress window instead (build the client first). The scenarios are described in [testing](docs/testing.md).
 
-The tests cover editing, draft recovery, Undo, imports, collection decisions,
-review downloads and failed or delayed requests. Use
-`npm --prefix web run test:e2e:open` after building to work in the Cypress window.
-See [testing](docs/testing.md) for the scenarios and failure simulation.
-
-## Local storage and limitations
-
-Saved studies are stored in `~/.local/share/ircomp-gui/workspace.sqlite3`.
-`IRCOMP_GUI_DATABASE` selects another database; `IRCOMP_GUI_WEB` selects an already
-built client directory. Restarting the service loses unsaved working copies and
-previews. Browser reload can reconnect while the same service is running, but
-unsubmitted typing has no guaranteed recovery.
-
-Use one process and one browser tab per study. A local lock orders operations,
-and SQLite saves a complete study in one transaction. There is no multi-tab
-merge: the latest explicit Save wins. After a connection error, use **Refresh
-working state** and check what was accepted before repeating the operation.
-
-YAML editing, the IRCOMP compiler, workflow graphs and scientific execution are
-future work. The local JSON format is not the IRCOMP specification language.
+## Known limitations
+- The studies are saved in `~/.local/share/ircomp-gui/workspace.sqlite3`. `IRCOMP_GUI_DATABASE` chooses another database file and `IRCOMP_GUI_WEB` another directory with a built client.
+- The open studies (and import previews) live only in the memory of the service. Restarting it loses whatever wasn't saved. Reloading the page reconnects to the study while the service is still running, but text typed just before the reload may be lost.
+- Use one tab per study. Operations are ordered by a lock and SQLite saves the whole study in one transaction, but two tabs aren't merged - the last save wins. After a connection error, press **Refresh working state** and check what was applied before trying again.
+- YAML editing, the IRCOMP compiler, workflow graphs and running the analysis are all future work. The JSON format here is not the IRCOMP specification language.
 
 ## Source archive
+`make pack` (run on a clean, committed checkout) creates `release/ircomp-gui-source.zip` and its SHA-256 file. The archive has the tracked source, configuration, contracts, examples and documentation. Installed dependencies, databases, build output and test output are left out.
 
-Run `make pack` from a clean, committed checkout. It creates
-`release/ircomp-gui-source.zip` and its SHA-256 file. The archive contains the
-tracked source, configuration, contracts, examples and documentation. Installed
-dependencies, local databases, build output and generated test files are excluded.
-
-## Libraries and source information
-
-The application uses FastAPI, Pydantic, Uvicorn, jsonschema, React and Vite.
-Hatchling and editables are used for Python installation. External dependencies
-retain their licences. The catalogue includes NCBI reference metadata and keeps
-its original source report and checksum.
+## Libraries and sources
+The application uses FastAPI, Pydantic, Uvicorn, jsonschema, React and Vite, Hatchling and editables are used for installing the Python package. All of them keep their own licences. The chromosome lengths in the catalogue come from the NCBI assembly report, which is kept in `contracts/references` together with its checksum.
 
 Code and documentation were developed with substantial AI assistance, including
 core functionality. The [contribution record](ai-audit.md) describes its scope.

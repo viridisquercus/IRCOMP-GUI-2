@@ -183,7 +183,7 @@ class LocalBoundary:
             if host not in self.hosts or (origin and origin not in self.origins):
                 raise DomainError(
                     "ORIGIN_REJECTED",
-                    "Use this application's configured local address.",
+                    "Use the local address the application was started with.",
                 )
 
             if scope["method"] in SAFE_METHODS:
@@ -272,8 +272,7 @@ def create_app(
     app = FastAPI(
         title="IRCOMP Study Workspace",
         version="0.1.0",
-        description="Local request editing and evidence review. No compiler or "
-        "scientific execution.",
+        description="Local editing of requests and review of evidence.",
     )
     app.state.workspace = workspace
     app.state.repository = repository
@@ -309,9 +308,7 @@ def create_app(
     @app.exception_handler(ValidationError)
     async def invalid_model(_request: Request, _error: ValidationError) -> JSONResponse:
         return error_response(
-            DomainError(
-                "SCHEMA_INVALID", "The proposed change exceeds a field or state limit."
-            )
+            DomainError("SCHEMA_INVALID", "The change goes over one of the limits.")
         )
 
     @app.exception_handler(Exception)
@@ -321,8 +318,8 @@ def create_app(
         return error_response(
             DomainError(
                 "INTERNAL_ERROR",
-                "The operation could not complete. Retain your work and "
-                "inspect local service logs.",
+                "Something went wrong in the service, see its log for details. "
+                "Your work is still here.",
             )
         )
 

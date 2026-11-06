@@ -63,12 +63,12 @@ from ircomp_gui.domain.rules import (
 
 # Checks listed by Check request which this application does not do
 NOT_PERFORMED = [
-    "Reference sequence availability/checksum",
+    "Reference sequence (file and checksum)",
     "Sequence extraction",
     "PAM inspection",
     "Off-target search",
     "Biological suitability",
-    "IRCOMP specification and controller validation",
+    "IRCOMP specification check",
 ]
 
 
@@ -196,8 +196,8 @@ class WorkspaceService:
         if session is None:
             raise DomainError(
                 "SESSION_EXPIRED",
-                "This working session is unavailable. Reopen the saved study;"
-                " unsaved changes may be lost.",
+                "This session doesn't exist anymore (was the service restarted?). "
+                "Open the saved study again, unsaved changes are lost.",
             )
         return session
 
@@ -314,8 +314,8 @@ class WorkspaceService:
                     code = "IDENTITY_CONFLICT"
                 raise DomainError(
                     code,
-                    f"Identity already belongs to study {collision}. "
-                    "Open it or duplicate its request.",
+                    f"This request is already saved as study {collision}. "
+                    "Open that one, or duplicate it.",
                 )
 
             study = new_study(
@@ -430,7 +430,8 @@ class WorkspaceService:
 
             if isinstance(command, AttachEvidence):
                 raise DomainError(
-                    "SCHEMA_INVALID", "Attachment requires an owned evidence preview."
+                    "SCHEMA_INVALID",
+                    "Evidence can only be attached from an import preview.",
                 )
             if isinstance(
                 command,
@@ -484,9 +485,7 @@ class WorkspaceService:
         with self.lock:
             session = self.get(workspace_id)
             if session.previous is None:
-                raise DomainError(
-                    "UNDO_UNAVAILABLE", "There is no unsaved accepted action to undo."
-                )
+                raise DomainError("UNDO_UNAVAILABLE", "Nothing to undo.")
             session.study = session.previous
             session.previous = None
             return session
@@ -542,10 +541,9 @@ class WorkspaceService:
             # The one check done here, then the ones which are not
             checks = [
                 {
-                    "name": "Local request structure and catalogue bounds",
+                    "name": "Request structure and contig lengths",
                     "status": "failed" if diagnostics else "passed",
-                    "message": "Local checks only; no biological or compiler "
-                    "acceptance is implied.",
+                    "message": "Only checked locally, IRCOMP may still refuse it.",
                 }
             ]
             for name in NOT_PERFORMED:
@@ -553,7 +551,7 @@ class WorkspaceService:
                     {
                         "name": name,
                         "status": "not_performed",
-                        "message": "Not performed by this local workspace.",
+                        "message": "Not done here.",
                     }
                 )
 

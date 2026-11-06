@@ -22,7 +22,7 @@ import "./App.css";
 /* Values */
 const VIEWS: View[] = ["prepare", "review", "export"];
 const DUPLICATE_QUESTION =
-  "Duplicate the active request with fresh identities? Evidence, decisions and draft buffers will not be copied.";
+  "Copy the active request into a new study? Only the targets are copied, not the evidence, decisions or unapplied edits.";
 
 /* Study controls */
 /**
@@ -50,7 +50,7 @@ function NewStudyForm() {
           })
         }
         maxLength={MAX_LABEL}
-        placeholder="A clear name for this request"
+        placeholder="e.g. BRCA1 exon screen"
       />
       <button className="secondary" disabled={state.busy || !title?.trim()}>
         Create study
@@ -222,7 +222,7 @@ function AppHeader() {
           <i />
           Local workspace
         </span>
-        <span className="badge neutral">Pre-experiment</span>
+        <span className="badge neutral">v0.1</span>
       </div>
     </header>
   );
@@ -428,7 +428,7 @@ function SavedStudies() {
         >
           <strong>{item.title}</strong>
           <span>Saved v{item.saved_version}</span>
-          <span>Open →</span>
+          <span>Open</span>
         </button>
       ))}
     </section>
@@ -444,42 +444,41 @@ function Welcome() {
     <>
       <section className="welcome-grid">
         <div className="welcome-copy">
-          <p className="eyebrow">Explicit inputs. Traceable review.</p>
+          <p className="eyebrow">Getting started</p>
           <h1>
-            Prepare the request.
+            Prepare a request,
             <br />
-            Keep the reasoning.
+            then review what comes back
           </h1>
           <p>
-            Create a study above or inspect the synthetic sample to explore a
-            complete local workflow.
+            Create a new study above, or open the sample request to try the
+            whole workflow.
           </p>
           <button
             disabled={state.busy || !state.catalogue}
             onClick={() => void controller.sample("request-valid.json")}
           >
-            Inspect sample request <span aria-hidden="true">↗</span>
+            Open sample request
           </button>
           <p className="hint">
-            Sample records are labelled synthetic. No genomic analysis has been
-            performed.
+            The sample data are made up, nothing in them was actually computed.
           </p>
         </div>
         <div className="welcome-steps">
           <WelcomeStep
             number="01"
             title="Prepare"
-            text="Explicit intervals, reference identities and recoverable drafts."
+            text="Choose the reference and set the target intervals."
           />
           <WelcomeStep
             number="02"
             title="Review"
-            text="Source-specific evidence and independent collection decisions."
+            text="Import the evidence and decide about each candidate."
           />
           <WelcomeStep
             number="03"
             title="Export"
-            text="Identified snapshots with source bytes and unresolved work."
+            text="Download the request or the review as a JSON file."
           />
         </div>
       </section>
@@ -505,9 +504,7 @@ export function App() {
         <div className="workspace-heading">
           <div>
             <p className="eyebrow">Request preparation / evidence review</p>
-            <h2>
-              {workspace?.study.title ?? "A clear context for every decision."}
-            </h2>
+            <h2>{workspace?.study.title ?? "No study open"}</h2>
           </div>
           {workspace && <SaveControls />}
         </div>
@@ -520,8 +517,7 @@ export function App() {
         <footer className="workspace-footer">
           <span>IRCOMP / Local study tools</span>
           <span>
-            Editing and imported evidence review · scientific execution is
-            external
+            Nothing is computed here, the analysis itself runs in IRCOMP
           </span>
         </footer>
       </main>

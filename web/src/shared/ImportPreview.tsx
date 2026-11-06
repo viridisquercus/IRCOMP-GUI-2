@@ -43,7 +43,7 @@ export function ImportPreviewPanel() {
     >
       <div className="panel-heading">
         <div>
-          <p className="eyebrow">Inspect before accepting</p>
+          <p className="eyebrow">Check before using it</p>
           <h2>
             {preview.kind === "request" ? "Request" : "Evidence"} import preview
           </h2>
@@ -52,7 +52,7 @@ export function ImportPreviewPanel() {
           {preview.status}
         </span>
       </div>
-      <p>Parsing and preview leave your accepted study unchanged.</p>
+      <p>Nothing changes in your study until you accept the file.</p>
       <dl className="metadata">
         <div>
           <dt>Reference received</dt>
@@ -81,8 +81,8 @@ export function ImportPreviewPanel() {
       </dl>
       {alreadySaved && (
         <p className="notice">
-          This request identity already exists. Open the saved study from the
-          study selector; import cannot overwrite it.
+          This request is already saved. Open it from the study selector
+          instead, an import can't overwrite it.
         </p>
       )}
       {preview.diagnostics.map((item, index) => (
