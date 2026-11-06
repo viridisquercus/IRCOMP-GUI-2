@@ -2,7 +2,6 @@
  * @file App.tsx
  * @brief Frame of the application - header, study controls and the views
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:

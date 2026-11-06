@@ -2,7 +2,6 @@
  * @file constants.ts
  * @brief Fixed values shared by the web client
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:

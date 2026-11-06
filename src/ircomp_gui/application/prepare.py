@@ -2,7 +2,6 @@
 # @file prepare.py
 # @brief Editing of the request targets and their reference context
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

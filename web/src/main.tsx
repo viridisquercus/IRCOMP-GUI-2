@@ -2,7 +2,6 @@
  * @file main.tsx
  * @brief Entry point of the web client
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  */
 // Shared styles first, the components build on them

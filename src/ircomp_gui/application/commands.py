@@ -2,7 +2,6 @@
 # @file commands.py
 # @brief Operations which can change a study
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

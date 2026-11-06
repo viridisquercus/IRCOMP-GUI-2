@@ -2,7 +2,6 @@
  * @file workspace.cy.ts
  * @brief Tests of preparing, saving and undoing a study
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  */
 

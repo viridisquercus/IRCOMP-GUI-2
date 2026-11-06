@@ -2,7 +2,6 @@
 # @file requests.py
 # @brief Bodies of the HTTP requests sent by the web client
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 # ************************************************************************
 

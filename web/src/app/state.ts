@@ -2,7 +2,6 @@
  * @file state.ts
  * @brief State of the web client and the reducer changing it
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:

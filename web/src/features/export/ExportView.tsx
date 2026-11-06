@@ -2,7 +2,6 @@
  * @file ExportView.tsx
  * @brief 03 / Export - request snapshot or review package of the saved study
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:

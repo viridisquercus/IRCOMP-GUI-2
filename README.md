@@ -1,6 +1,5 @@
 # IRCOMP-GUI: preparing CRISPR requests and reviewing their results
 ### Author: Lukas (Viridis) Dubsik
-#### Date: 6.11.2026
 #### Version: 0.1
 
 

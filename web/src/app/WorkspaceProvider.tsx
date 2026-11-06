@@ -2,7 +2,6 @@
  * @file WorkspaceProvider.tsx
  * @brief React context holding the state shared by all the views
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  */
 import {

@@ -2,7 +2,6 @@
 # @file workspace.py
 # @brief Working copies of the studies, Save and Undo
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

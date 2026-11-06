@@ -2,7 +2,6 @@
  * @file ReviewView.tsx
  * @brief 02 / Review - imported evidence and the decisions about it
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:

@@ -2,7 +2,6 @@
  * @file api.ts
  * @brief Communication with the local Python service
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:

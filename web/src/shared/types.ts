@@ -2,7 +2,6 @@
  * @file types.ts
  * @brief Types of the data exchanged with the local service
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:

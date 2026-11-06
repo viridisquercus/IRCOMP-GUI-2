@@ -2,7 +2,6 @@
 # @file export.py
 # @brief Request and review files prepared from a saved study
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

@@ -17,7 +17,7 @@ A review package has the saved request, the chosen collections and the original 
 ## Examples and references
 The [examples](examples/) directory has a request and three evidence files: one matching it, one empty and one that doesn't match. All the candidates are made up. The mismatching one is there on purpose, to show the import error. An empty list of candidates is valid.
 
-[catalogue.json](catalogue.json) lists the supported references and profiles. The GRCh38.p14 entry only has the 24 nuclear chromosomes, their accessions and lengths are taken from the [NCBI report](references/grch38-p14-assembly-report.txt) kept here. The mitochondrion, patches and alternative loci are left out. The URL and hash of the report are in the catalogue. Knowing the lengths doesn't mean the FASTA file is there or correct.
+[catalogue.json](catalogue.json) lists the supported references and profiles. The GRCh38.p14 entry only has the 24 nuclear chromosomes, their accessions and lengths are taken from the [NCBI report](references/grch38-p14-assembly-report.txt) kept here. The mitochondrion, patches and alternative loci are left out. The report's calendar metadata is omitted from the retained copy. The catalogue contains the source URL and the hash of this local copy. Knowing the lengths doesn't mean the FASTA file is there or correct.
 
 The checks done at runtime are described in [implementation details](../docs/architecture.md). The [IRCOMP integration notes](https://viridisquercusnova.atlassian.net/wiki/spaces/IRCOMP/pages/29392897) have the future specification fields and the checks of the conversion.
 

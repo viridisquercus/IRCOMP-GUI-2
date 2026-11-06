@@ -2,7 +2,6 @@
  * @file cypress.config.ts
  * @brief Configuration of the Cypress end to end tests
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:

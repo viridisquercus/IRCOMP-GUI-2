@@ -2,7 +2,6 @@
  * @file controller.ts
  * @brief Operations of the web client, sent to the local service
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:

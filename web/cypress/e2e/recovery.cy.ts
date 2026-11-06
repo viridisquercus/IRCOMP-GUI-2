@@ -2,7 +2,6 @@
  * @file recovery.cy.ts
  * @brief Tests of recovery from failed requests and stable exports
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  */
 

@@ -2,7 +2,6 @@
 # @file __main__.py
 # @brief Entry point, run as ircomp-gui or python -m ircomp_gui
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 # ************************************************************************
 

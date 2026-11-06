@@ -2,7 +2,6 @@
  * @file vite.config.ts
  * @brief Build of the web client, in development /api goes to Python
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  */
 import { defineConfig } from "vite";

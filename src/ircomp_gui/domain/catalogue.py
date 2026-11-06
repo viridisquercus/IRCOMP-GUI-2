@@ -2,7 +2,6 @@
 # @file catalogue.py
 # @brief Supported references, their contigs and analysis profiles
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

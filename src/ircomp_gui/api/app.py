@@ -2,7 +2,6 @@
 # @file app.py
 # @brief HTTP interface of the application and serving of the GUI
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

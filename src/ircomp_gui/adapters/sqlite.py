@@ -2,7 +2,6 @@
 # @file sqlite.py
 # @brief Loading and saving of the studies in SQLite
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

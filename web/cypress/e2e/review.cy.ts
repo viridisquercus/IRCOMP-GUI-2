@@ -2,7 +2,6 @@
  * @file review.cy.ts
  * @brief Tests of evidence import, review decisions and review export
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  */
 

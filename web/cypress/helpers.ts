@@ -2,7 +2,6 @@
  * @file helpers.ts
  * @brief Steps shared by the end to end tests
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  */
 import type {

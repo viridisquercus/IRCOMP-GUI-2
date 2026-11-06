@@ -2,7 +2,6 @@
  * @file test.mjs
  * @brief Start the service on a free port and run Cypress against it
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:

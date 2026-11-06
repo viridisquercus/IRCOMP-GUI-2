@@ -2,7 +2,6 @@
 # @file errors.py
 # @brief Error passed from the model up to the user interface
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 # ************************************************************************
 

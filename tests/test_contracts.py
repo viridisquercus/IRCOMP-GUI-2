@@ -2,7 +2,6 @@
 # @file test_contracts.py
 # @brief Tests of the API responses and of the generated exchange schema
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

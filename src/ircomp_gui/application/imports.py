@@ -2,7 +2,6 @@
 # @file imports.py
 # @brief Inspection of the imported files before they are used
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

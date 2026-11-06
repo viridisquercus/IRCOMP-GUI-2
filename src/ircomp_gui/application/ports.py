@@ -2,7 +2,6 @@
 # @file ports.py
 # @brief Interfaces of the storage and exchange used by the services
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

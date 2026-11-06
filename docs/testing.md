@@ -46,7 +46,7 @@ The tests click through the real GUI against the real HTTP routes and SQLite, th
 
 There are no automatic retries and no fixed waits, the tests always wait for a request or for the expected state. When something fails, the screenshots are in `web/cypress/screenshots` and the downloaded files in `web/cypress/downloads` (both ignored by Git).
 
-`make check` type-checks the test files, the Cypress configuration and the runner too. The last run passed all 11 scenarios and the 6 Python tests (6.11.2026, Node 20.20.2, Cypress 15.21.1, Electron on Linux).
+`make check` type-checks the test files, the Cypress configuration and the runner too. The last run passed all 11 scenarios and the 6 Python tests (Node 20.20.2, Cypress 15.21.1, Electron on Linux).
 
 These tests only check that the features work and recover from errors. They don't test load, the biology, or whether the interface is easy to use - that would need real users.
 

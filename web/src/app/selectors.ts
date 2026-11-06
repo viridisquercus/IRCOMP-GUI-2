@@ -2,7 +2,6 @@
  * @file selectors.ts
  * @brief Values derived from the client state
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  */
 import type { State } from "./state";

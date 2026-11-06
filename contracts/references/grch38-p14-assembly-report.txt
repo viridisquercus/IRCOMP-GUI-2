@@ -4,7 +4,6 @@
 # Taxid:          9606
 # BioProject:     PRJNA31257
 # Submitter:      Genome Reference Consortium
-# Date:           2022-02-03
 # Synonyms:       hg38	
 # Assembly type:  haploid-with-alt-loci
 # Release type:   patch

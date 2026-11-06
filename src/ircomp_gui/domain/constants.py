@@ -2,7 +2,6 @@
 # @file constants.py
 # @brief Limits and fixed values used through the whole application
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

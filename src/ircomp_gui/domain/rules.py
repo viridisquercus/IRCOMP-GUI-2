@@ -2,7 +2,6 @@
 # @file rules.py
 # @brief Checks of the study data before it is used or saved
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

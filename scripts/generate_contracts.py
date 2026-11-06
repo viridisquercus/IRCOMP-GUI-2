@@ -2,7 +2,6 @@
 # @file generate_contracts.py
 # @brief Generation of the exchange schema and browser types from Python
 # @author Lukas (Viridis) Dubsik
-# @date 6-11-2026
 # @version 0.1
 #
 # Detailed description:

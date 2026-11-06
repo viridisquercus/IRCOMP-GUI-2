@@ -2,7 +2,6 @@
  * @file PrepareView.tsx
  * @brief 01 / Prepare - targets of the request and their context
  * @author Lukas (Viridis) Dubsik
- * @date 6-11-2026
  * @version 0.1
  *
  * Detailed description:
