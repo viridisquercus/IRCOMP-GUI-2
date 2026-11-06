@@ -11,6 +11,7 @@
  */
 import { useWorkspace } from "../app/WorkspaceProvider";
 import type { ImportPreview } from "./types";
+import "./ImportPreview.css";
 
 /* Functions */
 /**

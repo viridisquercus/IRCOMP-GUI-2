@@ -17,6 +17,7 @@ import { ReviewView } from "../features/review/ReviewView";
 import { ExportView } from "../features/export/ExportView";
 import { ImportPreviewPanel } from "../shared/ImportPreview";
 import { DEMO_REFERENCE, MAX_LABEL } from "../shared/constants";
+import "./App.css";
 
 /* Values */
 const VIEWS: View[] = ["prepare", "review", "export"];

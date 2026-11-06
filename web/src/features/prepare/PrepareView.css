@@ -1,0 +1,169 @@
+/**
+ * @file PrepareView.css
+ * @brief Styles of 01 / Prepare - target list, editor, checks and context editor
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
+
+/* Layout: targets | editor | context column */
+.prepare-grid {
+  display: grid;
+  grid-template-columns: 245px minmax(300px, 1fr) 285px;
+  align-items: start;
+  gap: 18px;
+}
+.context-column {
+  display: grid;
+  gap: 16px;
+}
+
+/* Target list */
+.target-panel {
+  padding: 18px 0 0;
+  overflow: hidden;
+}
+.target-panel .panel-heading {
+  padding: 0 15px;
+  gap: 6px;
+}
+.target-row {
+  display: flex;
+  gap: 13px;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 17px 15px;
+  color: var(--ink);
+  background: white;
+  text-align: left;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-left: 3px solid transparent;
+  font-weight: 400;
+}
+.target-row:hover {
+  background: #f6f9f6;
+}
+.target-row.selected {
+  background: #edf5ef;
+  border-left-color: var(--teal);
+}
+.target-row strong {
+  font-size: 12px;
+  display: block;
+  overflow-wrap: anywhere;
+}
+.target-row small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.target-number {
+  font-size: 10px;
+  color: var(--muted);
+  padding-top: 3px;
+}
+.panel-footer {
+  background: #fafbf9;
+  padding: 18px 15px 3px;
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.panel-footer p {
+  font-size: 10px;
+}
+
+/* Problems and checks */
+.problem {
+  display: block;
+  width: 100%;
+  color: #9c3e32;
+  background: #fff7f2;
+  border: 1px solid #ecd6c9;
+  padding: 10px;
+  margin: 8px 0;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 400;
+}
+.problem:hover {
+  background: #fcece2;
+}
+.problem small {
+  display: block;
+  margin-top: 5px;
+}
+.check-line {
+  display: flex;
+  align-items: start;
+  gap: 9px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.check-line > span {
+  font-weight: 700;
+  color: var(--teal);
+}
+.check-line small {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Change of reference or profile */
+.context-editor {
+  margin-top: 20px;
+}
+.context-editor[open] > summary {
+  margin-bottom: 18px;
+}
+.context-target {
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) 2fr 1fr 1fr;
+  align-items: end;
+  gap: 15px;
+  padding: 18px 0;
+  font-size: 12px;
+}
+.context-target strong {
+  align-self: center;
+}
+.context-target label {
+  font-size: 10px;
+}
+.context-target select,
+.context-target input {
+  margin-top: 6px;
+}
+
+/* Narrow screens - the context column goes under the editor */
+@media (max-width: 1200px) {
+  .prepare-grid {
+    grid-template-columns: 230px minmax(0, 1fr);
+  }
+  .context-column {
+    grid-column: 1/-1;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .prepare-grid {
+    grid-template-columns: 1fr;
+  }
+  .context-column {
+    grid-template-columns: 1fr;
+  }
+  .context-target {
+    grid-template-columns: 1fr 1fr;
+  }
+  .context-target strong {
+    grid-column: 1/-1;
+  }
+}

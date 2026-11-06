@@ -21,6 +21,7 @@ import type {
   Target,
   TargetDraft,
 } from "../../shared/types";
+import "./PrepareView.css";
 
 /* Helper functions */
 /**

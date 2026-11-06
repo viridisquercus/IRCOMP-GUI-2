@@ -1,0 +1,416 @@
+/**
+ * @file base.css
+ * @brief Colours and the styles shared by all the views
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ *
+ * Detailed description:
+ *  Has to be loaded before the styles of the components (main.tsx imports
+ *  it first), as they build on the panels, buttons and forms from here.
+ *  Colours are kept in the variables on :root.
+ */
+
+/* Colours and base */
+:root {
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  color: #233c3b;
+  background: #f4f6f3;
+  font-synthesis: none;
+  --teal: #17685e;
+  --ink: #173d38;
+  --muted: #60716d;
+  --line: #dce4df;
+  --paper: #fff;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+:focus-visible {
+  outline: 3px solid #2777bb;
+  outline-offset: 3px;
+}
+
+/* Buttons */
+button,
+.button,
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  background: var(--teal);
+  color: white;
+  border: 1px solid var(--teal);
+  border-radius: 6px;
+  padding: 10px 15px;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.45;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+button:hover,
+.button:hover,
+.file-button:hover {
+  background: #10534a;
+}
+button:disabled,
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+button.secondary,
+.file-button.secondary {
+  color: var(--ink);
+  background: white;
+  border-color: #cbd7d1;
+}
+button.secondary:hover,
+.file-button.secondary:hover {
+  background: #edf4ef;
+}
+button.text-button {
+  color: var(--teal);
+  background: transparent;
+  border-color: transparent;
+  padding: 6px 1px;
+}
+button.danger {
+  color: #a53d34;
+}
+button.small {
+  padding: 6px 9px;
+  font-size: 12px;
+}
+
+/* File chooser - a label looking like a button, the input lies over it */
+.file-button {
+  margin: 0;
+  position: relative;
+}
+.file-button input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.file-button:focus-within {
+  outline: 3px solid #2777bb;
+  outline-offset: 3px;
+}
+
+/* Typography */
+h1 {
+  font-size: 29px;
+  line-height: 1.2;
+  letter-spacing: -0.8px;
+  color: var(--ink);
+  font-weight: 630;
+  margin: 8px 0 10px;
+}
+h2 {
+  font-size: 16px;
+  font-weight: 650;
+  color: var(--ink);
+  margin: 0;
+}
+h3 {
+  font-size: 14px;
+  color: var(--ink);
+  margin: 0 0 7px;
+}
+p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 8px 0 16px;
+}
+.eyebrow {
+  color: var(--teal);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+.mono {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 0.91em;
+  overflow-wrap: anywhere;
+}
+
+/* Panels */
+.panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 21px;
+  min-width: 0;
+}
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 21px;
+}
+summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.count {
+  background: #edf3ef;
+  border-radius: 4px;
+  font-size: 11px;
+  padding: 2px 7px;
+  margin-left: 4px;
+  color: var(--teal);
+}
+/* Heading of each view (01 / Prepare ...) */
+.section-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin: 30px 0 22px;
+}
+.section-intro p:last-child {
+  margin-bottom: 0;
+}
+
+/* Forms */
+label,
+.label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 7px;
+  color: var(--ink);
+}
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid #819389;
+  border-radius: 5px;
+  background: white;
+  color: var(--ink);
+  font-size: 13px;
+  padding: 10px 11px;
+  min-width: 0;
+}
+textarea {
+  resize: vertical;
+  line-height: 1.65;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+}
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--teal);
+}
+form > label:not(:first-child),
+fieldset > label:not(:first-child) {
+  margin-top: 21px;
+}
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 20px;
+  min-width: 0;
+}
+fieldset:disabled {
+  opacity: 0.7;
+}
+legend {
+  margin: 20px 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+.hint {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.actions.wrap {
+  flex-wrap: wrap;
+}
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-weight: 400;
+  margin: 14px 0;
+  font-size: 12px;
+}
+.checkbox input {
+  width: 15px;
+  height: 15px;
+  margin: 2px 0;
+  accent-color: var(--teal);
+  flex-shrink: 0;
+}
+.checkbox small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* Badges and metadata */
+.badge {
+  display: inline-flex;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.badge.teal {
+  color: #19584d;
+  background: #e9f3ed;
+  border-color: #d8e9dd;
+}
+.badge.amber {
+  color: #795419;
+  background: #fcf4df;
+  border-color: #ebdfbd;
+}
+.badge.neutral {
+  color: #526c61;
+  background: #f2f5f1;
+  border-color: #e2e8e1;
+}
+.metadata {
+  font-size: 11px;
+  margin: 18px 0;
+}
+.metadata > div {
+  margin-bottom: 14px;
+}
+dt {
+  color: var(--muted);
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+dd {
+  margin: 0;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+}
+.metadata.horizontal {
+  display: flex;
+  gap: 35px;
+}
+
+/* Empty states, notices and errors */
+.empty {
+  text-align: center;
+  padding: 55px 25px;
+}
+.empty p {
+  max-width: 550px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.empty.compact {
+  padding: 30px 15px;
+}
+.empty.compact p {
+  font-size: 11px;
+}
+.empty-symbol {
+  display: inline-flex;
+  background: #f0f6f1;
+  border: 1px solid #dfe9e1;
+  border-radius: 12px;
+  width: 54px;
+  height: 54px;
+  align-items: center;
+  justify-content: center;
+  font-size: 29px;
+  color: var(--teal);
+  margin-bottom: 20px;
+}
+.notice {
+  padding: 13px 15px;
+  color: #745720;
+  background: #fcf6e6;
+  border: 1px solid #eadfbf;
+  border-radius: 5px;
+  font-size: 12px;
+}
+.field-error {
+  color: #a23d32;
+  font-size: 12px;
+}
+.field-error small {
+  display: block;
+  margin-top: 4px;
+}
+/* Has to come after .panel, it only changes its border colour */
+.warning-border {
+  border-color: #d8bd7c;
+}
+
+/* Other elements */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 22px 0;
+}
+pre {
+  background: #f3f6f2;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 15px;
+  font-size: 11px;
+  line-height: 1.6;
+  overflow: auto;
+  max-height: 350px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Narrow screens */
+@media (max-width: 760px) {
+  .section-intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .metadata.horizontal {
+    flex-direction: column;
+    gap: 0;
+  }
+}

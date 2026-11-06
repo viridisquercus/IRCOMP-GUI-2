@@ -30,6 +30,7 @@ import type {
   Membership,
   Metric,
 } from "../../shared/types";
+import "./ReviewView.css";
 
 /* Helper functions */
 /**

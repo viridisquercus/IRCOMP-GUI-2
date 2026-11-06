@@ -1,0 +1,24 @@
+/**
+ * @file ImportPreview.css
+ * @brief Styles of the import preview panel
+ * @author Lukas (Viridis) Dubsik
+ * @date 6-11-2026
+ * @version 0.1
+ */
+
+.import-preview {
+  margin: 20px 0;
+}
+/* Received and expected values side by side */
+.import-preview .metadata {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 30px;
+}
+
+/* Narrow screens */
+@media (max-width: 760px) {
+  .import-preview .metadata {
+    grid-template-columns: 1fr;
+  }
+}

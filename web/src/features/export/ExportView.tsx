@@ -20,6 +20,7 @@ import {
   unresolvedCount,
 } from "../../app/selectors";
 import type { ExportPreview } from "../../shared/types";
+import "./ExportView.css";
 
 /* Values */
 type ExportKind = "request" | "review";
