@@ -12,7 +12,16 @@
  */
 import { api, ApiError, fileBase64 } from "../shared/api";
 import { NO_DRAFTS, SESSION_KEY } from "../shared/constants";
-import type { Command, TargetDraft, Workspace } from "../shared/types";
+import type {
+  Catalogue,
+  Command,
+  ExportPreview,
+  ImportPreview,
+  StudyList,
+  TargetDraft,
+  Validation,
+  Workspace,
+} from "../shared/types";
 import { dirty, revision, unapplied } from "./selectors";
 import type { Action, State } from "./state";
 
@@ -39,12 +48,9 @@ function activeRevision(workspace: Workspace) {
  * would only be confusing.
  */
 async function discardQuietly(workspaceId: string) {
-  await api(
-    `/workspaces/${workspaceId}`,
-    null,
-    { discard: true },
-    "DELETE",
-  ).catch(() => undefined);
+  await api(`/workspaces/${workspaceId}`, { discard: true }, "DELETE").catch(
+    () => undefined,
+  );
 }
 
 /* Controller */
@@ -101,7 +107,7 @@ export function createController(
   }
 
   async function listStudies() {
-    const result = await api("/studies", "StudyList");
+    const result = await api<StudyList>("/studies");
     patch({ studies: result.studies });
   }
 
@@ -131,7 +137,7 @@ export function createController(
 
     await run(async () => {
       const previous = current().workspace;
-      const result = await api("/workspaces", "Workspace", body);
+      const result = await api<Workspace>("/workspaces", body);
       received(result, current().generation, true);
 
       // The guard already confirmed the old working copy can go
@@ -152,9 +158,8 @@ export function createController(
     await run(async () => {
       const before = current();
       const workspace = before.workspace!;
-      const result = await api(
+      const result = await api<Workspace>(
         `/workspaces/${workspace.workspace_id}/commands`,
-        "Workspace",
         { draft_buffers: before.buffers, command: operation },
       );
       received(result, before.generation);
@@ -185,12 +190,7 @@ export function createController(
     await run(async () => {
       const before = current();
       if (before.importPreview) {
-        await api(
-          `/imports/${before.importPreview.preview_id}`,
-          null,
-          {},
-          "DELETE",
-        );
+        await api(`/imports/${before.importPreview.preview_id}`, {}, "DELETE");
       }
 
       // Evidence also says which request it is meant for
@@ -203,21 +203,21 @@ export function createController(
           revision_id: before.revisionId,
         };
       }
-      patch({ importPreview: await api("/imports", "ImportPreview", body) });
+      patch({ importPreview: await api<ImportPreview>("/imports", body) });
     });
   }
 
   /* Study */
   async function boot() {
     await run(async () => {
-      patch({ catalogue: await api("/catalogue", "Catalogue") });
+      patch({ catalogue: await api<Catalogue>("/catalogue") });
       await listStudies();
 
       // Reconnect to the workspace from before the page reload
       const id = sessionStorage.getItem(SESSION_KEY);
       if (!id) return;
       try {
-        received(await api(`/workspaces/${id}`, "Workspace"), 0, true);
+        received(await api<Workspace>(`/workspaces/${id}`), 0, true);
       } catch {
         sessionStorage.removeItem(SESSION_KEY);
         patch({
@@ -233,9 +233,8 @@ export function createController(
     await run(async () => {
       const before = current();
       const workspace = before.workspace!;
-      const result = await api(
+      const result = await api<Workspace>(
         `/workspaces/${workspace.workspace_id}/save`,
-        "Workspace",
         { draft_buffers: before.buffers },
       );
       received(result, before.generation);
@@ -249,11 +248,11 @@ export function createController(
       if (workspace) {
         // -1 never matches, so the local editor text is kept
         received(
-          await api(`/workspaces/${workspace.workspace_id}`, "Workspace"),
+          await api<Workspace>(`/workspaces/${workspace.workspace_id}`),
           -1,
         );
       } else {
-        patch({ catalogue: await api("/catalogue", "Catalogue") });
+        patch({ catalogue: await api<Catalogue>("/catalogue") });
         await listStudies();
       }
     }, "Reloaded from the service and your typing was kept. Check what was applied before trying again.");
@@ -271,7 +270,6 @@ export function createController(
       const workspace = current().workspace!;
       await api(
         `/workspaces/${workspace.workspace_id}`,
-        null,
         { discard: true },
         "DELETE",
       );
@@ -286,9 +284,8 @@ export function createController(
     await run(async () => {
       const before = current();
       const workspace = before.workspace!;
-      const result = await api(
+      const result = await api<Workspace>(
         `/workspaces/${workspace.workspace_id}/undo`,
-        "Workspace",
         {},
       );
       received(result, before.generation);
@@ -345,9 +342,8 @@ export function createController(
   async function validate() {
     await run(async () => {
       const before = current();
-      const result = await api(
+      const result = await api<Validation>(
         `/workspaces/${before.workspace!.workspace_id}/validate`,
-        "Validation",
         { revision_id: before.revisionId, target_draft: before.buffers.target },
       );
       patch({ validation: result });
@@ -378,8 +374,7 @@ export function createController(
   async function cancelImport() {
     await run(async () => {
       const preview = current().importPreview;
-      if (preview)
-        await api(`/imports/${preview.preview_id}`, null, {}, "DELETE");
+      if (preview) await api(`/imports/${preview.preview_id}`, {}, "DELETE");
       patch({ importPreview: null });
     });
   }
@@ -418,7 +413,7 @@ export function createController(
       try {
         let revisionId = before.revisionId;
         if (lastSaved) {
-          source = await api("/workspaces", "Workspace", {
+          source = await api<Workspace>("/workspaces", {
             source: "saved",
             study_id: workspace.study.study_id,
           });
@@ -429,7 +424,7 @@ export function createController(
           if (!saved) revisionId = source.study.active_revision_id;
         }
 
-        const preview = await api("/exports", "ExportPreview", {
+        const preview = await api<ExportPreview>("/exports", {
           study_id: workspace.study.study_id,
           revision_id: revisionId,
           kind: before.exportKind,

@@ -210,35 +210,51 @@ class WorkspaceService:
         return session
 
     def view(self, session: Session) -> WorkspaceView:
-        """Return study data without sending the original evidence files."""
+        """Prepare the workspace data sent back to the web client.
+
+        Parameters
+        ----------
+        session : Session
+            Session to describe
+
+        Returns
+        -------
+        WorkspaceView
+            The study and its state, the evidence bytes are left out
+        """
         study = session.study
+
+        # The client never needs the original bytes, they can be big
+        evidence: list[EvidenceSummary] = []
+        for item in study.evidence:
+            evidence.append(EvidenceSummary(bundle=item.bundle, sha256=item.sha256))
+
+        # Count the unfinished decisions here, so the client doesn't have to
+        collections: list[CollectionView] = []
+        for item in study.collections:
+            collections.append(
+                CollectionView(**item.model_dump(), unresolved_count=unresolved([item]))
+            )
+
+        shown = StudyView(
+            study_id=study.study_id,
+            request_id=study.request_id,
+            title=study.title,
+            active_revision_id=study.active_revision_id,
+            revisions=study.revisions,
+            target_labels=study.target_labels,
+            evidence=evidence,
+            collections=collections,
+            draft_buffers=study.draft_buffers,
+        )
+        diagnostics = request_diagnostics(study, active_revision(study), self.catalogue)
         return WorkspaceView(
             workspace_id=session.workspace_id,
             base_saved_version=session.base_saved_version,
             dirty=study != session.saved,
             can_undo=session.previous is not None,
-            study=StudyView(
-                study_id=study.study_id,
-                request_id=study.request_id,
-                title=study.title,
-                active_revision_id=study.active_revision_id,
-                revisions=study.revisions,
-                target_labels=study.target_labels,
-                evidence=[
-                    EvidenceSummary(bundle=item.bundle, sha256=item.sha256)
-                    for item in study.evidence
-                ],
-                collections=[
-                    CollectionView(
-                        **item.model_dump(), unresolved_count=unresolved([item])
-                    )
-                    for item in study.collections
-                ],
-                draft_buffers=study.draft_buffers,
-            ),
-            diagnostics=request_diagnostics(
-                study, active_revision(study), self.catalogue
-            ),
+            study=shown,
+            diagnostics=diagnostics,
         )
 
     def _register(self, study: Study, saved_version: int = 0) -> Session:

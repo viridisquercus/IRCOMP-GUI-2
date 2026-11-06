@@ -1,4 +1,17 @@
-"""Check API serialization and the generated exchange format."""
+# ************************************************************************
+# @file test_contracts.py
+# @brief Tests of the API responses and of the generated exchange schema
+# @author Lukas (Viridis) Dubsik
+# @date 6-11-2026
+# @version 0.1
+#
+# Detailed description:
+#  The routes are called straight through ASGI, no server or port is
+#  needed (so these run even where Cypress can't). Run them with
+#  `make test-unit`.
+# ************************************************************************
+
+"""Test the API responses and the generated exchange schema."""
 
 import asyncio
 import base64
@@ -20,11 +33,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ContractTests(unittest.TestCase):
+    """Tests running the whole app in process."""
+
     def setUp(self):
+        """Create the app with a temporary database for every test."""
         async def inline(function, /, *args, **kwargs):
             return function(*args, **kwargs)
 
-        # Exercise routes in process; no socket or worker-thread scheduling needed.
+        # Run the routes right here, no socket or worker threads are needed
         runner = patch("fastapi.routing.run_in_threadpool", inline)
         runner.start()
         self.addCleanup(runner.stop)
@@ -77,6 +93,7 @@ class ContractTests(unittest.TestCase):
         return asyncio.run(call())
 
     def test_typed_routes_and_published_limits(self):
+        """Every route has a response model and the limits come from constants."""
         status, catalogue = self.request("GET", "/api/v1/catalogue")
         self.assertEqual(status, 200)
         self.assertEqual(catalogue["limits"]["targets"], MAX_TARGETS)
@@ -99,6 +116,7 @@ class ContractTests(unittest.TestCase):
                         self.assertIn("$ref", schema, path)
 
     def test_response_model_rejects_invalid_service_output(self):
+        """A wrong value returned by a service is refused by the response model."""
         for route in self.app.routes:
             if isinstance(route, APIRoute) and route.path == "/api/v1/studies":
                 route.dependant.call = lambda: {"studies": [{"study_id": 17}]}
@@ -110,6 +128,7 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(body["error"]["code"], "INTERNAL_ERROR")
 
     def test_import_review_save_export_keeps_original_bytes(self):
+        """Import, review, save and export keep the evidence bytes unchanged."""
         raw = (ROOT / "contracts/examples/request-valid.json").read_bytes()
         status, preview = self.request(
             "POST",
@@ -178,6 +197,7 @@ class ContractTests(unittest.TestCase):
         )
 
     def test_exchange_constraints_still_reject_invalid_files(self):
+        """The generated schema still refuses the invalid example files."""
         request = json.loads(
             (ROOT / "contracts/examples/request-valid.json").read_text()
         )
@@ -192,6 +212,7 @@ class ContractTests(unittest.TestCase):
         self.assertFalse(self.validator.is_valid(evidence))
 
     def test_exchange_rejects_invalid_label_keys_and_values(self):
+        """Target labels with a wrong key or an empty value are refused."""
         request = json.loads(
             (ROOT / "contracts/examples/request-valid.json").read_text()
         )
@@ -204,6 +225,7 @@ class ContractTests(unittest.TestCase):
         self.validator.validate(request)
 
     def test_workspace_response_requires_nested_fields(self):
+        """A workspace response missing a nested field is refused."""
         with self.assertRaises(ValidationError):
             WorkspaceView.model_validate({"workspace_id": "bad", "study": {}})
 

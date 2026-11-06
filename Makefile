@@ -3,7 +3,7 @@
 
 PYTHON ?= python3
 
-.PHONY: install install-dev build run contracts check format test test-contracts pack
+.PHONY: install install-dev build run contracts check format test test-unit pack
 
 install:
 	$(PYTHON) -m venv .venv
@@ -34,11 +34,10 @@ format:
 	.venv/bin/ruff format src
 	npm --prefix web run format
 
-test-contracts:
+test-unit:
 	PYTHONPATH=src .venv/bin/python -m unittest discover -s tests
-	npm --prefix web run test:contracts
 
-test: build test-contracts
+test: build test-unit
 	npm --prefix web run test:e2e
 
 pack:

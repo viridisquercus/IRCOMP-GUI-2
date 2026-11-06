@@ -267,12 +267,3 @@ export type Command =
 export type Bundle = EvidenceBundle;
 export type Study = StudyView;
 export type Collection = CollectionView;
-export type ResponseTypes = {
-  Catalogue: Catalogue;
-  Workspace: Workspace;
-  StudyList: StudyList;
-  ImportPreview: ImportPreview;
-  ExportPreview: ExportPreview;
-  Validation: Validation;
-  ErrorResponse: ErrorResponse;
-};
